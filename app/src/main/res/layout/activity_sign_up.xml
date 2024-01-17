@@ -45,13 +45,33 @@
             android:hint="Retype Password"
             android:inputType="textPassword" />
 
-        <Button
-            android:id="@+id/signUpBtn"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Register"
-            tools:layout_editor_absoluteY="495dp" />
+            android:layout_gravity="center_horizontal">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                android:indeterminateTint="@color/white"
+                android:elevation="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerVertical="true"
+                android:layout_alignStart="@+id/signUpBtn"
+                android:layout_alignEnd="@+id/signUpBtn"/>
+
+            <Button
+                android:id="@+id/signUpBtn"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Register"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

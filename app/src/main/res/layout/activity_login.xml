@@ -36,13 +36,33 @@
             android:inputType="textPassword"
             android:layout_below="@+id/emailET"/>
 
-        <Button
-            android:id="@+id/loginBtn"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Login"
-            tools:layout_editor_absoluteY="495dp" />
+            android:layout_gravity="center_horizontal">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                android:indeterminateTint="@color/white"
+                android:elevation="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerVertical="true"
+                android:layout_alignStart="@+id/loginBtn"
+                android:layout_alignEnd="@+id/loginBtn"/>
+
+            <Button
+                android:id="@+id/loginBtn"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Login"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
