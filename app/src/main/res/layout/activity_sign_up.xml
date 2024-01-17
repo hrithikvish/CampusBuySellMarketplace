@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingVertical="20dp"
+    android:paddingHorizontal="40dp"
+    tools:context=".SignUpActivity">
+
+    <LinearLayout
+        android:id="@+id/signUpFormLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/emailET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:maxLines="1"
+            android:layout_marginBottom="20dp"
+            android:inputType="text"
+            android:hint="Email" />
+
+        <EditText
+            android:id="@+id/passET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:maxLines="1"
+            android:layout_marginBottom="20dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:layout_below="@+id/emailET"/>
+
+        <EditText
+            android:id="@+id/conPassET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:layout_marginBottom="20dp"
+            android:hint="Retype Password"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/signUpBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Register"
+            tools:layout_editor_absoluteY="495dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loginTextLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/signUpFormLayout"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Already have an Account? "/>
+
+        <TextView
+            android:id="@+id/goToLoginPageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:text="Login"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
