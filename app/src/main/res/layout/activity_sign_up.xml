@@ -4,45 +4,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingVertical="20dp"
+    android:paddingBottom="20dp"
     android:paddingHorizontal="40dp"
+    android:background="@color/white"
     tools:context=".SignUpActivity">
+
+    <RelativeLayout
+        android:id="@+id/welcomeTextLayout"
+        android:layout_width="match_parent"
+        android:layout_above="@+id/signUpFormLayout"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cbsmairem"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:elevation="5dp"
+            android:layout_alignBottom="@id/img"
+            android:textAlignment="center"
+            android:text="Welcome to CBSM"/>
+
+    </RelativeLayout>
+
 
     <LinearLayout
         android:id="@+id/signUpFormLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_above="@+id/loginTextLayout"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/emailET"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="18dp"
+            android:layout_height="50dp"
+            android:paddingHorizontal="20dp"
+            android:textStyle="bold"
+            android:background="@drawable/etborder"
             android:maxLines="1"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:inputType="text"
-            android:hint="Email" />
+            android:hint="Enter your email address" />
 
         <EditText
             android:id="@+id/passET"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="18dp"
+            android:layout_height="50dp"
+            android:paddingHorizontal="20dp"
+            android:textStyle="bold"
+            android:background="@drawable/etborder"
             android:maxLines="1"
-            android:layout_marginBottom="20dp"
-            android:hint="Password"
+            android:layout_marginBottom="10dp"
+            android:hint="Enter your password"
             android:inputType="textPassword"
             android:layout_below="@+id/emailET"/>
 
         <EditText
             android:id="@+id/conPassET"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="18dp"
+            android:layout_height="50dp"
+            android:paddingHorizontal="20dp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:background="@drawable/etborder"
             android:layout_marginBottom="20dp"
-            android:hint="Retype Password"
+            android:hint="Confirm password"
             android:inputType="textPassword" />
 
         <RelativeLayout
@@ -51,7 +86,7 @@
             android:layout_gravity="center_horizontal">
 
             <ProgressBar
-                android:id="@+id/progressBar"
+                android:id="@+id/signUpBar"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:visibility="gone"
@@ -68,7 +103,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 style="@style/Widget.MaterialComponents.Button"
+                android:background="@drawable/etborder"
+                android:layout_marginBottom="10dp"
                 android:text="Register"
+                android:textAllCaps="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false" />
 
@@ -77,8 +115,41 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="or"
+            android:text="OR"
+            android:layout_marginBottom="10dp"
             android:textAlignment="center"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <ProgressBar
+                android:id="@+id/phoneBar"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                android:indeterminateTint="@color/white"
+                android:elevation="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerVertical="true"
+                android:layout_alignStart="@+id/phoneSignUp"
+                android:layout_alignEnd="@+id/phoneSignUp"/>
+
+            <Button
+                android:id="@+id/phoneSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                style="@style/Widget.MaterialComponents.Button"
+                app:icon="@drawable/baseline_smartphone_24"
+                android:background="@drawable/etborder"
+                android:layout_marginBottom="10dp"
+                android:textAllCaps="false"
+                app:iconTint="@null"
+                android:text="Continue with Phone"/>
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -104,7 +175,9 @@
                 android:layout_gravity="center_horizontal"
                 style="@style/Widget.MaterialComponents.Button"
                 app:icon="@drawable/arturo_wibawa_akar_google"
-                app:iconGravity="textStart"
+                app:iconTint="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/etborder"
                 android:text="Continue with Google"/>
 
         </RelativeLayout>
@@ -116,23 +189,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/signUpFormLayout"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:text="Already have an Account? "/>
 
         <TextView
             android:id="@+id/goToLoginPageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
+            android:textColor="@color/my_color_primary"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:text="Login"/>
+            android:text="Log in"/>
 
     </LinearLayout>
 

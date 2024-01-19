@@ -3,8 +3,10 @@ package com.hrithikvish.cbsm;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
 
 public class HomeActivity extends AppCompatActivity {
@@ -23,5 +25,8 @@ public class HomeActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         binding.homeText.setText(intent.getStringExtra("name"));
+        String photoUrl = intent.getStringExtra("profileUrl");
+        System.out.println("PHOTOURL: " + photoUrl);
+        Glide.with(this).load(photoUrl).into(binding.profileImg);
     }
 }

@@ -26,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -46,12 +47,15 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 9001;
 
+    MaterialButton googleSignUnBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
 
         binding.goToLoginPageText.setOnClickListener(view-> {
@@ -68,8 +72,10 @@ public class SignUpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         binding.googleSignUp.setOnClickListener(view -> {
+
             binding.googleBar.setVisibility(View.VISIBLE);
             binding.googleSignUp.setText("");
+            googleSignUnBtn.setIcon(null);
 
             Intent signInIntent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(signInIntent);
@@ -84,6 +90,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onStop();
         binding.googleBar.setVisibility(View.GONE);
         binding.googleSignUp.setText("Sign up using Google");
+        googleSignUnBtn.setIconResource(R.drawable.arturo_wibawa_akar_google);
     }
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -98,17 +105,14 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
-                                Log.d("SignUpActivity", "Google Sign-In success");
                                 auth = FirebaseAuth.getInstance();
                                 Toast.makeText(SignUpActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                                intent.putExtra("name", auth.getCurrentUser().getDisplayName());
+                                intent.putExtra("name", Objects.requireNonNull(auth.getCurrentUser()).getDisplayName());
+                                intent.putExtra("profileUrl", Objects.requireNonNull(auth.getCurrentUser().getPhotoUrl()).toString());
                                 startActivity(intent);
                             } else {
-                                Exception exception = task.getException();
-                                String errorMessage = exception != null ? exception.getMessage() : "Registration failed.";
                                 Toast.makeText(SignUpActivity.this, "Registration Failed, Try Again!", Toast.LENGTH_SHORT).show();
-                                Log.e("SignUpActivity", "Registration failed: " + errorMessage);
                             }
                         }
                     });
