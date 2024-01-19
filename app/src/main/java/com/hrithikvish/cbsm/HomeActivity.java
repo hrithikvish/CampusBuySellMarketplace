@@ -2,6 +2,7 @@ package com.hrithikvish.cbsm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
@@ -20,5 +21,7 @@ public class HomeActivity extends AppCompatActivity {
             super.finish();
         });
 
+        Intent intent = getIntent();
+        binding.homeText.setText(intent.getStringExtra("name"));
     }
 }

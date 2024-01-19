@@ -9,11 +9,22 @@
     android:gravity="center"
     tools:context=".HomeActivity">
 
+    <TextView
+        android:id="@+id/homeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Name"
+        android:gravity="center"
+        android:layout_marginBottom="40sp"
+        android:textStyle="bold"
+        android:textSize="30sp"/>
+
     <Button
         android:id="@+id/logoutBtn"
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/homeText"
         style="@style/Widget.MaterialComponents.Button"
         android:text="Logout Bitch"
         app:icon="@drawable/baseline_power_settings_new_24"
