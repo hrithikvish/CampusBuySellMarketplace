@@ -90,6 +90,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_gravity="center_horizontal">
 
             <ProgressBar
@@ -111,7 +112,6 @@
                 android:layout_gravity="center_horizontal"
                 style="@style/Widget.MaterialComponents.Button"
                 android:background="@drawable/etborder"
-                android:layout_marginBottom="10dp"
                 android:textColor="@color/white"
                 android:text="Register"
                 android:textAllCaps="false"
@@ -131,6 +131,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_gravity="center_horizontal">
 
             <ProgressBar
@@ -153,7 +154,6 @@
                 style="@style/Widget.MaterialComponents.Button"
                 app:icon="@drawable/baseline_smartphone_24"
                 android:background="@drawable/etborder"
-                android:layout_marginBottom="10dp"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
                 app:iconTint="@null"

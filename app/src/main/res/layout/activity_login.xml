@@ -75,6 +75,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_gravity="center_horizontal">
 
             <ProgressBar
@@ -98,7 +99,6 @@
                 android:text="Login"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
-                android:layout_marginBottom="10dp"
                 android:background="@drawable/etborder"
                 android:focusable="false"
                 android:focusableInTouchMode="false" />

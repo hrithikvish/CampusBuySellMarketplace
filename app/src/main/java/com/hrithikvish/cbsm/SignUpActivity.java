@@ -45,8 +45,6 @@ public class SignUpActivity extends AppCompatActivity {
     GoogleSignInClient googleSignInClient;
     String clientId = "751206525517-rbhuic3hspp5k5hpohgd9ghp324mbj05.apps.googleusercontent.com";
 
-    private static final int RC_SIGN_IN = 9001;
-
     MaterialButton googleSignUnBtn;
 
     @Override
@@ -72,29 +70,55 @@ public class SignUpActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
         binding.signUpBtn.setOnClickListener(view-> {
-            signUpUsingEmailPass(binding.emailET.getText().toString().trim(), binding.passET.getText().toString().trim());
+            String email = binding.emailET.getText().toString();
+            String pass = binding.passET.getText().toString();
+            if(!email.isEmpty() && !pass.isEmpty()) {
+                changeRegBtnToProgBar();
+                signUpUsingEmailPass(binding.emailET.getText().toString().trim(), binding.passET.getText().toString().trim());
+            } else {
+                displayEmptyErrorMsg();
+            }
         });
 
         binding.googleSignUp.setOnClickListener(view -> {
-
-            binding.googleBar.setVisibility(View.VISIBLE);
-            binding.googleSignUp.setText("");
-            googleSignUnBtn.setIcon(null);
+            changeGoogleBtnToProgBar();
 
             Intent signInIntent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(signInIntent);
-
-            //startActivityForResult(signInIntent, RC_SIGN_IN);
         });
 
+    }
+
+    private void displayEmptyErrorMsg() {
+        binding.emailET.setError("Enter Email");
+        binding.passET.setError("Enter Password");
+    }
+
+    private void changeGoogleBtnToProgBar() {
+        binding.googleBar.setVisibility(View.VISIBLE);
+        binding.googleSignUp.setText("");
+        googleSignUnBtn.setIcon(null);
+    }
+    private void changeRegBtnToProgBar() {
+        binding.signUpBar.setVisibility(View.VISIBLE);
+        binding.signUpBtn.setText("");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        changeBackDefaultGoogleBtn();
+        changeBackDefaultRegBtn();
+    }
+
+    private void changeBackDefaultGoogleBtn() {
         binding.googleBar.setVisibility(View.GONE);
         binding.googleSignUp.setText("Sign up using Google");
         googleSignUnBtn.setIconResource(R.drawable.arturo_wibawa_akar_google);
+    }
+    private void changeBackDefaultRegBtn() {
+        binding.signUpBar.setVisibility(View.GONE);
+        binding.signUpBtn.setText("Register");
     }
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -127,25 +151,6 @@ public class SignUpActivity extends AppCompatActivity {
         }
     });
 
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-            }
-        }
-    }*/
-
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -163,9 +168,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void signIn() {
-    }
-
     private void signUpUsingEmailPass(String email, String pass) {
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -174,6 +176,9 @@ public class SignUpActivity extends AppCompatActivity {
                     Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
                     intent.putExtra("email", Objects.requireNonNull(auth.getCurrentUser()).getEmail());
                     startActivity(intent);
+                } else {
+                    Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    changeBackDefaultRegBtn();
                 }
             }
         });
