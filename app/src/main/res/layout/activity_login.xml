@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:textSize="30sp"
             android:elevation="5dp"
+            android:textColor="@color/black"
             android:layout_alignBottom="@id/img"
             android:textAlignment="center"
             android:text="Welcome Back"/>
@@ -49,6 +50,8 @@
             android:paddingHorizontal="20dp"
             android:textStyle="bold"
             android:maxLines="1"
+            android:textColorHint="@color/my_grey_dark"
+            android:textColor="@color/black"
             android:background="@drawable/etborder"
             android:layout_marginBottom="10dp"
             android:inputType="text"
@@ -62,8 +65,10 @@
             android:maxLines="1"
             android:textStyle="bold"
             android:background="@drawable/etborder"
+            android:textColorHint="@color/my_grey_dark"
             android:layout_marginBottom="20dp"
             android:hint="Password"
+            android:textColor="@color/black"
             android:inputType="textPassword"
             android:layout_below="@+id/emailET"/>
 
@@ -91,6 +96,7 @@
                 android:layout_gravity="center_horizontal"
                 style="@style/Widget.MaterialComponents.Button"
                 android:text="Login"
+                android:textColor="@color/white"
                 android:textAllCaps="false"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/etborder"
@@ -103,6 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="OR"
+            android:textColor="@color/black"
             android:layout_marginBottom="10dp"
             android:textAlignment="center"/>
 
@@ -132,6 +139,7 @@
                 app:icon="@drawable/arturo_wibawa_akar_google"
                 app:iconTint="@color/white"
                 android:textAllCaps="false"
+                android:textColor="@color/white"
                 android:background="@drawable/etborder"
                 android:text="Continue with Google"/>
 
@@ -152,6 +160,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
+            android:textColor="@color/black"
             android:text="Don't have an Account? "/>
 
         <TextView

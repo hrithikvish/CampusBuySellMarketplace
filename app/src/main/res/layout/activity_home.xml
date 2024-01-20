@@ -7,6 +7,7 @@
     android:paddingHorizontal="20dp"
     android:paddingVertical="50dp"
     android:orientation="vertical"
+    android:background="@color/white"
     tools:context=".HomeActivity">
 
     <LinearLayout
@@ -29,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
+            android:textColor="@color/black"
             android:gravity="left"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -43,8 +45,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:text="Logout Bitch"
+        android:textColor="@color/white"
         android:layout_gravity="center"
         app:icon="@drawable/baseline_power_settings_new_24"
+        app:iconTint="@color/white"
         app:iconGravity="textStart" />
 
 
