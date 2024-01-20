@@ -31,7 +31,7 @@
             android:textColor="@color/black"
             android:layout_alignBottom="@id/img"
             android:textAlignment="center"
-            android:text="Welcome to CBSM"/>
+            android:text="Welcome to Cbsm"/>
 
     </RelativeLayout>
 
@@ -55,7 +55,7 @@
             android:textColorHint="@color/my_grey_dark"
             android:textColor="@color/black"
             android:layout_marginBottom="10dp"
-            android:inputType="text"
+            android:inputType="textEmailAddress"
             android:hint="Enter your email address" />
 
         <EditText

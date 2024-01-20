@@ -23,7 +23,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             app:shapeAppearanceOverlay="@style/roundImg"
-            tools:src="@drawable/cbsmairem" />
+            android:src="@drawable/cbsmairem" />
 
         <TextView
             android:id="@+id/homeText"

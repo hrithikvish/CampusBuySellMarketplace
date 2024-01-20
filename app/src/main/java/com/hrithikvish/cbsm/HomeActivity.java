@@ -24,9 +24,14 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        binding.homeText.setText(intent.getStringExtra("name"));
-        String photoUrl = intent.getStringExtra("profileUrl");
-        System.out.println("PHOTOURL: " + photoUrl);
-        Glide.with(this).load(photoUrl).into(binding.profileImg);
+        if(intent.getStringExtra("name") != null) {
+            binding.homeText.setText(intent.getStringExtra("name"));
+            String photoUrl = intent.getStringExtra("profileUrl");
+            System.out.println("PHOTOURL: " + photoUrl);
+            Glide.with(this).load(photoUrl).into(binding.profileImg);
+        }
+        else if(intent.getStringExtra("email") != null) {
+            binding.homeText.setText(intent.getStringExtra("email"));
+        }
     }
 }
