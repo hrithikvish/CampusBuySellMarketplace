@@ -30,7 +30,7 @@
             android:elevation="5dp"
             android:layout_alignBottom="@id/img"
             android:textAlignment="center"
-            android:text="Welcome to CBSM"/>
+            android:text="Welcome to Cbsm"/>
 
     </RelativeLayout>
 
@@ -52,7 +52,7 @@
             android:background="@drawable/etborder"
             android:maxLines="1"
             android:layout_marginBottom="10dp"
-            android:inputType="text"
+            android:inputType="textEmailAddress"
             android:hint="Enter your email address" />
 
         <EditText

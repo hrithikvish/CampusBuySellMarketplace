@@ -55,6 +55,8 @@ public class SignUpActivity extends AppCompatActivity {
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        auth = FirebaseAuth.getInstance();
+
         googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
 
@@ -69,7 +71,9 @@ public class SignUpActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
-        auth = FirebaseAuth.getInstance();
+        binding.signUpBtn.setOnClickListener(view-> {
+            signUpUsingEmailPass(binding.emailET.getText().toString().trim(), binding.passET.getText().toString().trim());
+        });
 
         binding.googleSignUp.setOnClickListener(view -> {
 
@@ -160,6 +164,19 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void signIn() {
+    }
+
+    private void signUpUsingEmailPass(String email, String pass) {
+        auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()) {
+                    Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
+                    intent.putExtra("email", Objects.requireNonNull(auth.getCurrentUser()).getEmail());
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
 }
