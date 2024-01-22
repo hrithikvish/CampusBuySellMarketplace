@@ -85,6 +85,10 @@ public class SignUpActivity extends AppCompatActivity {
             activityResultLauncher.launch(signInIntent);
         });
 
+        binding.phoneSignUp.setOnClickListener(view-> {
+            startActivity(new Intent(SignUpActivity.this, PhoneAuthActivity.class));
+        });
+
     }
 
     private void displayEmptyErrorMsg() {
