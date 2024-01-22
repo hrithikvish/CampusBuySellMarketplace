@@ -63,10 +63,8 @@ public class SignUpActivity extends AppCompatActivity {
             finish();
         });
 
-        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(clientId)
-                .requestEmail()
-                .build();
+        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(clientId).requestEmail().build();
+
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
         binding.signUpBtn.setOnClickListener(view-> {
@@ -113,7 +111,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void changeBackDefaultGoogleBtn() {
         binding.googleBar.setVisibility(View.GONE);
-        binding.googleSignUp.setText("Sign up using Google");
+        binding.googleSignUp.setText("Continue with Google");
         googleSignUnBtn.setIconResource(R.drawable.arturo_wibawa_akar_google);
     }
     private void changeBackDefaultRegBtn() {
@@ -150,23 +148,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
     });
-
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success");
-                    FirebaseUser user = auth.getCurrentUser();
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.getException());
-                }
-            }
-        });
-    }
 
     private void signUpUsingEmailPass(String email, String pass) {
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

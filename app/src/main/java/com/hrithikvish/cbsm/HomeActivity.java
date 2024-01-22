@@ -24,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
+        //sign up
         if(intent.getStringExtra("name") != null) {
             binding.homeText.setText(intent.getStringExtra("name"));
             String photoUrl = intent.getStringExtra("profileUrl");
@@ -33,5 +34,16 @@ public class HomeActivity extends AppCompatActivity {
         else if(intent.getStringExtra("email") != null) {
             binding.homeText.setText(intent.getStringExtra("email"));
         }
+        //login
+        else if(intent.getStringExtra("Login Email") != null) {
+            binding.homeText.setText(intent.getStringExtra("Login Email"));
+        }
+        else if(intent.getStringExtra("Login name") != null) {
+            binding.homeText.setText(intent.getStringExtra("Login name"));
+            String photoUrl = intent.getStringExtra("Login profileUrl");
+            System.out.println("PHOTOURL: " + photoUrl);
+            Glide.with(this).load(photoUrl).into(binding.profileImg);
+        }
+
     }
 }
