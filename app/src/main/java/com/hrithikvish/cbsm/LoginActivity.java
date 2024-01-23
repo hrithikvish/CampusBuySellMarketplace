@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                 signInUsingEmailPass(email, pass);
             } else {
                 displayEmptyErrorMsg();
+                changeBackDefaultLoginBtn();
             }
         });
 
