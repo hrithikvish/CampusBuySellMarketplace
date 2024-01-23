@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="20dp"
-    android:paddingVertical="50dp"
     android:orientation="vertical"
     android:background="@color/white"
     tools:context=".HomeActivity">
 
-    <LinearLayout
+    <!--<LinearLayout
         android:id="@+id/nameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,13 +42,29 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:text="Logout Bitch"
+        android:layout_below="@+id/nameLayout"
         android:background="@drawable/etborder"
         android:textColor="@color/white"
         android:layout_gravity="center"
         android:textAllCaps="false"
         app:icon="@drawable/baseline_power_settings_new_24"
         app:iconTint="@color/white"
-        app:iconGravity="textStart" />
+        app:iconGravity="textStart" />-->
 
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"/>
 
-</LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:elevation="5dp"
+        app:labelVisibilityMode="labeled"
+        android:paddingHorizontal="10dp"
+        app:menu="@menu/bottom_nav_items" />
+
+</RelativeLayout>

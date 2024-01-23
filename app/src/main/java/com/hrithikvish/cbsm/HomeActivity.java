@@ -7,11 +7,13 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
 
 public class HomeActivity extends AppCompatActivity {
 
     ActivityHomeBinding binding;
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,13 +21,15 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.logoutBtn.setOnClickListener(view->{
+        auth = FirebaseAuth.getInstance();
+
+        /*binding.logoutBtn.setOnClickListener(view->{
             super.finish();
-        });
+        });*/
 
         Intent intent = getIntent();
         //sign up
-        if(intent.getStringExtra("name") != null) {
+        /*if(intent.getStringExtra("name") != null) {
             binding.homeText.setText(intent.getStringExtra("name"));
             String photoUrl = intent.getStringExtra("profileUrl");
             System.out.println("PHOTOURL: " + photoUrl);
@@ -43,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
             String photoUrl = intent.getStringExtra("Login profileUrl");
             System.out.println("PHOTOURL: " + photoUrl);
             Glide.with(this).load(photoUrl).into(binding.profileImg);
-        }
+        }*/
 
     }
 }

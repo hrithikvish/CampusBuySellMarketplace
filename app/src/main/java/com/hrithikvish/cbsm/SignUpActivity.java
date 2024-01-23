@@ -89,6 +89,10 @@ public class SignUpActivity extends AppCompatActivity {
             startActivity(new Intent(SignUpActivity.this, PhoneAuthActivity.class));
         });
 
+        binding.skipToHome.setOnClickListener(view-> {
+            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
+        });
+
     }
 
     private void displayEmptyErrorMsg() {
