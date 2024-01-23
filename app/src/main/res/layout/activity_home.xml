@@ -22,8 +22,7 @@
             android:id="@+id/profileImg"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            app:shapeAppearanceOverlay="@style/roundImg"
-            android:src="@drawable/cbsmairem" />
+            app:shapeAppearanceOverlay="@style/roundImg" />
 
         <TextView
             android:id="@+id/homeText"
