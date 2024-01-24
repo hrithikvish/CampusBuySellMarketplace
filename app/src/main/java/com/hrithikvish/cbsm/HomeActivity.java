@@ -25,11 +25,11 @@ public class HomeActivity extends AppCompatActivity {
 
         /*binding.logoutBtn.setOnClickListener(view->{
             super.finish();
-        });*/
+        });
 
-        Intent intent = getIntent();
+        //Intent intent = getIntent();
         //sign up
-        /*if(intent.getStringExtra("name") != null) {
+        if(intent.getStringExtra("name") != null) {
             binding.homeText.setText(intent.getStringExtra("name"));
             String photoUrl = intent.getStringExtra("profileUrl");
             System.out.println("PHOTOURL: " + photoUrl);

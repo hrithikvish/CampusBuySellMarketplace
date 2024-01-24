@@ -1,24 +1,17 @@
 package com.hrithikvish.cbsm;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -31,9 +24,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
 
 import java.util.Objects;
@@ -120,7 +111,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void changeBackDefaultGoogleBtn() {
         binding.googleBar.setVisibility(View.GONE);
         binding.googleSignUp.setText("Continue with Google");
-        googleSignUnBtn.setIconResource(R.drawable.arturo_wibawa_akar_google);
+        googleSignUnBtn.setIconResource(R.drawable.icon_google);
     }
     private void changeBackDefaultRegBtn() {
         binding.signUpBar.setVisibility(View.GONE);

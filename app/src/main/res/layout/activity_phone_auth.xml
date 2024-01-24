@@ -21,7 +21,7 @@
             android:id="@+id/img"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/phone"/>
+            android:src="@drawable/illus_phone"/>
 
     </RelativeLayout>
 
@@ -79,7 +79,7 @@
                 android:maxLines="1"
                 android:textColorHint="@color/my_grey_dark"
                 android:textColor="@color/black"
-                android:background="@drawable/etborder"
+                android:background="@drawable/bg_etbg"
                 android:layout_marginBottom="10dp"
                 android:inputType="phone"
                 android:hint="Mobile Number" />
@@ -128,7 +128,7 @@
                 android:text="Send OTP"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
-                android:background="@drawable/etborder"
+                android:background="@drawable/bg_etbg"
                 android:focusable="false"
                 android:focusableInTouchMode="false" />
 

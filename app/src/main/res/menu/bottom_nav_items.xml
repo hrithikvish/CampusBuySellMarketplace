@@ -4,22 +4,22 @@
 
     <item
         android:id="@+id/navHome"
-        android:icon="@drawable/home"
+        android:icon="@drawable/baseline_home_24"
         android:title="Home" />
     <item
         android:id="@+id/navExplore"
-        android:icon="@drawable/exlpore"
+        android:icon="@drawable/baseline_explore_24"
         android:title="Explore" />
     <item
         android:id="@+id/navPost"
-        android:icon="@drawable/post"
+        android:icon="@drawable/baseline_add_circle_24"
         android:title="Post" />
     <item
         android:id="@+id/navChat"
-        android:icon="@drawable/chat"
+        android:icon="@drawable/baseline_chat_24"
         android:title="Chat" />
     <item
         android:id="@+id/navProfile"
-        android:icon="@drawable/profile"
+        android:icon="@drawable/baseline_person_24"
         android:title="Profile" />
 </menu>
