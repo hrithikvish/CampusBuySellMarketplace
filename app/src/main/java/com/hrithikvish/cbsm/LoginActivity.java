@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -44,8 +45,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
-        googleSignInBtn = (MaterialButton) binding.googleSignIn;
         FirebaseApp.initializeApp(this);
+
+        googleSignInBtn = (MaterialButton) binding.googleSignIn;
 
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(clientId).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, options);
@@ -143,6 +145,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
+                    setSharedPref(true);
+
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     intent.putExtra("Login Email", auth.getCurrentUser().getEmail());
                     startActivity(intent);
@@ -151,5 +155,12 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setSharedPref(boolean isLoggedIn) {
+        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("isLoggedIn", isLoggedIn);
+        editor.apply();
     }
 }

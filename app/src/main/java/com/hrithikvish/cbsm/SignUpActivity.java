@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -80,10 +81,6 @@ public class SignUpActivity extends AppCompatActivity {
             startActivity(new Intent(SignUpActivity.this, PhoneAuthActivity.class));
         });
 
-        binding.skipToHome.setOnClickListener(view-> {
-            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-        });
-
     }
 
     private void displayEmptyErrorMsg() {
@@ -153,6 +150,8 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
+                    setSharedPref(true);
+
                     Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
                     intent.putExtra("email", Objects.requireNonNull(auth.getCurrentUser()).getEmail());
                     startActivity(intent);
@@ -162,6 +161,16 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setSharedPref(boolean isLoggedIn) {
+        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("isLoggedIn", isLoggedIn);
+        editor.apply();
+    }
+
+    private void SetSharedPref(Boolean isLoggedIn) {
     }
 
 }

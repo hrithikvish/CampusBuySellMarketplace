@@ -51,11 +51,33 @@
         app:iconTint="@color/white"
         app:iconGravity="textStart" />-->
 
-    <FrameLayout
+    <!--<FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize"/>
+        android:layout_marginBottom="?attr/actionBarSize"/>-->
+
+    <TextView
+        android:id="@+id/userNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="User Name"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:layout_above="@id/logoutBtn"/>
+
+    <Button
+        android:id="@+id/logoutBtn"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomNavView"
+        android:layout_margin="20dp"
+        android:background="@drawable/bg_etbg"
+        android:text="Dummy Logout"
+        android:textAllCaps="false" />
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
