@@ -127,11 +127,10 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
+                                setSharedPref(true);
                                 auth = FirebaseAuth.getInstance();
-                                Toast.makeText(SignUpActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                                intent.putExtra("name", Objects.requireNonNull(auth.getCurrentUser()).getDisplayName());
-                                intent.putExtra("profileUrl", Objects.requireNonNull(auth.getCurrentUser().getPhotoUrl()).toString());
+                                intent.putExtra("user", auth.getCurrentUser());
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Registration Failed, Try Again!", Toast.LENGTH_SHORT).show();
@@ -151,10 +150,8 @@ public class SignUpActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
                     setSharedPref(true);
-
                     Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                    intent.putExtra("email", Objects.requireNonNull(auth.getCurrentUser()).getEmail());
-                    startActivity(intent);
+                    startActivity(intent.putExtra("user", auth.getCurrentUser()));
                 } else {
                     Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     changeBackDefaultRegBtn();

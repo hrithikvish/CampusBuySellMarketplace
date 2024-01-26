@@ -89,11 +89,10 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
+                                setSharedPref(true);
                                 auth = FirebaseAuth.getInstance();
-                                Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                intent.putExtra("Login name", Objects.requireNonNull(auth.getCurrentUser()).getDisplayName());
-                                intent.putExtra("Login profileUrl", Objects.requireNonNull(auth.getCurrentUser().getPhotoUrl()).toString());
+                                intent.putExtra("user", auth.getCurrentUser());
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(LoginActivity.this, "Login Failed, Try Again!", Toast.LENGTH_SHORT).show();
@@ -148,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                     setSharedPref(true);
 
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("Login Email", auth.getCurrentUser().getEmail());
+                    intent.putExtra("user", auth.getCurrentUser());
                     startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();

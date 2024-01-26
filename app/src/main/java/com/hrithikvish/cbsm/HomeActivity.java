@@ -4,10 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
 
@@ -26,36 +24,13 @@ public class HomeActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        /*System.out.println(auth.getCurrentUser().getDisplayName());
-        System.out.println(auth.getCurrentUser().getEmail());
-        binding.userNameText.setText(auth.getCurrentUser().getDisplayName()==null ? auth.getCurrentUser().getEmail() : auth.getCurrentUser().getDisplayName());*/
-        binding.userNameText.setText(Objects.requireNonNull(auth.getCurrentUser()).getEmail());
+        binding.userNameText.setText(Objects.requireNonNull(auth.getCurrentUser()).getDisplayName().isEmpty() ? auth.getCurrentUser().getEmail() : auth.getCurrentUser().getDisplayName());
 
         binding.logoutBtn.setOnClickListener(view-> {
             auth.signOut();
             setSharedPref(false);
             startActivity(new Intent(HomeActivity.this, SignUpActivity.class));
         });
-
-        Intent intent = getIntent();
-        //sign up
-        if(intent.getStringExtra("name") != null) {
-            binding.userNameText.setText(intent.getStringExtra("name"));
-            String photoUrl = intent.getStringExtra("profileUrl");
-            System.out.println("PHOTOURL: " + photoUrl);
-        }
-        else if(intent.getStringExtra("email") != null) {
-            binding.userNameText.setText(intent.getStringExtra("email"));
-        }
-        //login
-        else if(intent.getStringExtra("Login Email") != null) {
-            binding.userNameText.setText(intent.getStringExtra("Login Email"));
-        }
-        else if(intent.getStringExtra("Login name") != null) {
-            binding.userNameText.setText(intent.getStringExtra("Login name"));
-            String photoUrl = intent.getStringExtra("Login profileUrl");
-            System.out.println("PHOTOURL: " + photoUrl);
-        }
 
     }
 
