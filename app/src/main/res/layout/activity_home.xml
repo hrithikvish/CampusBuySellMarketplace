@@ -8,54 +8,11 @@
     android:background="@color/white"
     tools:context=".HomeActivity">
 
-    <!--<LinearLayout
-        android:id="@+id/nameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="center"
-        android:orientation="horizontal">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/profileImg"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:shapeAppearanceOverlay="@style/roundImg" />
-
-        <TextView
-            android:id="@+id/homeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:textColor="@color/black"
-            android:gravity="left"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            tools:text="Name" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/logoutBtn"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:text="Logout Bitch"
-        android:layout_below="@+id/nameLayout"
-        android:background="@drawable/etborder"
-        android:textColor="@color/white"
-        android:layout_gravity="center"
-        android:textAllCaps="false"
-        app:icon="@drawable/baseline_power_settings_new_24"
-        app:iconTint="@color/white"
-        app:iconGravity="textStart" />-->
-
-    <!--<FrameLayout
+    <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize"/>-->
+        android:layout_marginBottom="?attr/actionBarSize"/>
 
     <TextView
         android:id="@+id/userNameText"
@@ -73,7 +30,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottomNavView"
-        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/bg_etbg"
         android:text="Dummy Logout"
         android:textAllCaps="false" />

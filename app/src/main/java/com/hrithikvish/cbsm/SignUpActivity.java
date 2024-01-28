@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,8 +27,14 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -60,13 +67,22 @@ public class SignUpActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
         binding.signUpBtn.setOnClickListener(view-> {
-            String email = binding.emailET.getText().toString();
-            String pass = binding.passET.getText().toString();
-            if(!email.isEmpty() && !pass.isEmpty()) {
+            String email = binding.emailET.getText().toString().trim();
+            String pass = binding.passET.getText().toString().trim();
+            String conPass = binding.conPassET.getText().toString().trim();
+            if(!email.isEmpty() && !pass.isEmpty() && !conPass.isEmpty()) {
                 changeRegBtnToProgBar();
-                signUpUsingEmailPass(binding.emailET.getText().toString().trim(), binding.passET.getText().toString().trim());
+                signUpUsingEmailPass(email, pass, conPass);
             } else {
-                displayEmptyErrorMsg();
+                if(email.isEmpty()) {
+                    binding.emailET.setError("Enter Email");
+                }
+                if(pass.isEmpty()) {
+                    binding.passET.setError("Enter Password");
+                }
+                if(conPass.isEmpty()) {
+                    binding.conPassET.setError("Re Enter Password");
+                }
             }
         });
 
@@ -78,14 +94,9 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         binding.phoneSignUp.setOnClickListener(view-> {
-            startActivity(new Intent(SignUpActivity.this, PhoneAuthActivity.class));
+            Toast.makeText(SignUpActivity.this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
         });
 
-    }
-
-    private void displayEmptyErrorMsg() {
-        binding.emailET.setError("Enter Email");
-        binding.passET.setError("Enter Password");
     }
 
     private void changeGoogleBtnToProgBar() {
@@ -113,6 +124,76 @@ public class SignUpActivity extends AppCompatActivity {
     private void changeBackDefaultRegBtn() {
         binding.signUpBar.setVisibility(View.GONE);
         binding.signUpBtn.setText("Register");
+    }
+
+
+    private void signUpUsingEmailPass(String email, String pass, String conPass) {
+        if(validateData(email, pass, conPass)) {
+            auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()) {
+                        addUserIntoFbDb(email, pass);
+                        setSharedPref(true);
+                        Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
+                        startActivity(intent.putExtra("user", auth.getCurrentUser()));
+                    } else {
+                        Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        changeBackDefaultRegBtn();
+                    }
+                }
+            });
+        } else {
+            changeBackDefaultRegBtn();
+        }
+    }
+
+    private void addUserIntoFbDb(String email, String pass) {
+        final DatabaseReference databaseReference;
+        String uid = auth.getCurrentUser().getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!snapshot.child("Users").child(uid).exists()) {
+                    HashMap<String, Object> userData = new HashMap<>();
+                    userData.put("email", email);
+                    userData.put("password", pass);
+
+                    databaseReference.child("Users").child(uid).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()) {
+                                Toast.makeText(SignUpActivity.this, "User added in DB", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(SignUpActivity.this, "Failed to add in DB", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private boolean validateData(String email, String pass, String conPass) {
+        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.emailET.setError("Invalid Email");
+            return false;
+        }
+        if(pass.length() < 8) {
+            binding.passET.setError("Password Length must be 8 or more");
+            return false;
+        }
+        if(!conPass.equals(pass)) {
+            binding.conPassET.setError("Password doesn't match");
+            return false;
+        }
+        return true;
     }
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -144,30 +225,11 @@ public class SignUpActivity extends AppCompatActivity {
         }
     });
 
-    private void signUpUsingEmailPass(String email, String pass) {
-        auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
-                    setSharedPref(true);
-                    Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                    startActivity(intent.putExtra("user", auth.getCurrentUser()));
-                } else {
-                    Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    changeBackDefaultRegBtn();
-                }
-            }
-        });
-    }
-
     private void setSharedPref(boolean isLoggedIn) {
         SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("isLoggedIn", isLoggedIn);
         editor.apply();
-    }
-
-    private void SetSharedPref(Boolean isLoggedIn) {
     }
 
 }
