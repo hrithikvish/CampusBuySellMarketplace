@@ -26,16 +26,12 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
-
-import java.util.HashMap;
-import java.util.Objects;
+import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -46,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     MaterialButton googleSignUnBtn;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +50,6 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
-
         googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
 
@@ -133,8 +129,10 @@ public class SignUpActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()) {
-                        addUserIntoFbDb(email, pass);
                         setSharedPref(true);
+                        //addUserIntoFbDb(email, pass);
+                        addUserDataInFirebaseDatabase(email, pass);
+
                         Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
                         startActivity(intent.putExtra("user", auth.getCurrentUser()));
                     } else {
@@ -148,7 +146,14 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void addUserIntoFbDb(String email, String pass) {
+    private void addUserDataInFirebaseDatabase(String email, String pass) {
+        DatabaseReference databaseReference;
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, databaseReference);
+        firebaseDatabaseHelper.addUserIntoFbDb(email, pass);
+    }
+
+    /*private void addUserIntoFbDb(String email, String pass) {
         final DatabaseReference databaseReference;
         String uid = auth.getCurrentUser().getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -178,7 +183,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
     private boolean validateData(String email, String pass, String conPass) {
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -210,6 +215,10 @@ public class SignUpActivity extends AppCompatActivity {
                             if(task.isSuccessful()) {
                                 setSharedPref(true);
                                 auth = FirebaseAuth.getInstance();
+                                FirebaseUser user = auth.getCurrentUser();
+                                String email = user.getEmail();
+                                addUserDataInFirebaseDatabase(email, "***No Password***");
+
                                 Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
                                 intent.putExtra("user", auth.getCurrentUser());
                                 startActivity(intent);
