@@ -53,7 +53,8 @@ public class HomeActivity extends AppCompatActivity {
                 } else if (id == R.id.navExplore) {
                     loadFragment(new ExploreFragment());
                 } else if (id == R.id.navPost) {
-                    loadFragment(new NewPostFragment());
+                    //loadFragment(new NewPostFragment());
+                    startActivity(new Intent(HomeActivity.this, NewPostActivity.class));
                 } else if (id == R.id.navChat) {
                     loadFragment(new ChatFragment());
                 } else {

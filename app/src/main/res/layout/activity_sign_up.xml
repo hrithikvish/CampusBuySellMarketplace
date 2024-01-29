@@ -31,7 +31,7 @@
             android:textColor="@color/black"
             android:layout_alignBottom="@id/img"
             android:textAlignment="center"
-            android:text="Welcome to Cbsm"/>
+            android:text="Welcome to Campy"/>
 
     </RelativeLayout>
 
