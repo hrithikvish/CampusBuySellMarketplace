@@ -4,15 +4,75 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context=".NewPostActivity">
 
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_centerInParent="true"
-        android:text="New Post" />
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/backBtn"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Close New Post Activity"
+                app:icon="@drawable/baseline_cancel_24"
+                />
+
+            <Button
+                android:id="@+id/nextBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button"
+                android:background="@drawable/bg_etbg"
+                android:textColor="@color/white"
+                android:text="Next"
+                android:layout_alignParentEnd="true"
+                android:textAllCaps="false" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/titleET"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:paddingHorizontal="20dp"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:background="@drawable/bg_newpost_et_bg"
+                android:textColorHint="@color/my_grey_dark"
+                android:textColor="@color/black"
+                android:layout_marginBottom="10dp"
+                android:inputType="text"
+                android:hint="Title" />
+
+            <EditText
+                android:id="@+id/bodyTextET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp"
+                android:layout_below="@+id/titleET"
+                android:background="@drawable/bg_newpost_et_bg"
+                android:paddingVertical="20dp"
+                android:textColorHint="@color/my_grey_dark"
+                android:textColor="@color/black"
+                android:layout_marginBottom="10dp"
+                android:hint="body text" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
