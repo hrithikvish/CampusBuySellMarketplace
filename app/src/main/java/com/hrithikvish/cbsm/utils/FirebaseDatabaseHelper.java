@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class FirebaseDatabaseHelper {
 
@@ -47,6 +48,46 @@ public class FirebaseDatabaseHelper {
                             }
                         }
                     });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void addPostIntoFbDb(String postTitle, String postBody) {
+        String uid = auth.getUid();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.child("PostIdGenerator").child("currentId").exists()) {
+                    long postID = (long) snapshot.child("PostIdGenerator").child("currentId").getValue();
+
+                    String postId = "Post: " + (postID + 1);
+
+                    HashMap<String, Object> newPostData = new HashMap<>();
+                    newPostData.put("user", uid);
+                    newPostData.put("title", postTitle);
+                    newPostData.put("body", postBody);
+
+                    databaseReference.child("Posts").child(postId).updateChildren(newPostData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()) {
+                                Toast.makeText(context, "Post Added into Fb Db", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                    databaseReference.child("PostIdGenerator").child("currentId").setValue(postID+1);
+
+                } else {
+                    databaseReference.child("PostIdGenerator").child("currentId").setValue(0);
                 }
             }
 

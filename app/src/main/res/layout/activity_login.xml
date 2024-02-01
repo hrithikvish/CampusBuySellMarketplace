@@ -54,7 +54,8 @@
             android:background="@drawable/bg_etbg"
             android:layout_marginBottom="10dp"
             android:inputType="text"
-            android:hint="Email or Phone" />
+            android:hint="Enter email"
+            android:autofillHints="emailAddress" />
 
         <EditText
             android:id="@+id/passET"
@@ -66,7 +67,7 @@
             android:background="@drawable/bg_etbg"
             android:textColorHint="@color/my_grey_dark"
             android:layout_marginBottom="20dp"
-            android:hint="Enter Password"
+            android:hint="Enter password"
             android:textColor="@color/black"
             android:inputType="textPassword"
             android:layout_below="@+id/emailET"/>

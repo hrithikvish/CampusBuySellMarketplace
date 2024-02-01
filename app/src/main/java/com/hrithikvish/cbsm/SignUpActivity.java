@@ -89,9 +89,9 @@ public class SignUpActivity extends AppCompatActivity {
             activityResultLauncher.launch(signInIntent);
         });
 
-        binding.phoneSignUp.setOnClickListener(view-> {
+        /*binding.phoneSignUp.setOnClickListener(view-> {
             Toast.makeText(SignUpActivity.this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
-        });
+        });*/
 
     }
 

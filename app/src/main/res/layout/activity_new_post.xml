@@ -4,28 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:padding="20dp"
     tools:context=".NewPostActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/addImageLayout"
+        android:layout_marginBottom="10dp"
         android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
             android:layout_marginBottom="20dp"
-            android:layout_height="wrap_content">
+            android:layout_height="40dp">
 
-            <Button
+            <!--<Button
                 android:id="@+id/backBtn"
                 style="?attr/materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="0dp"
                 android:contentDescription="Close New Post Activity"
                 app:icon="@drawable/baseline_cancel_24"
-                />
+                app:iconTint="@color/black"
+                />-->
+
+            <ImageView
+                android:id="@+id/backBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:src="@drawable/baseline_cancel_24"/>
 
             <Button
                 android:id="@+id/nextBtn"
@@ -47,31 +58,50 @@
             <EditText
                 android:id="@+id/titleET"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:paddingHorizontal="20dp"
-                android:textStyle="bold"
-                android:textSize="25sp"
+                android:layout_height="52dp"
                 android:background="@drawable/bg_newpost_et_bg"
-                android:textColorHint="@color/my_grey_dark"
-                android:textColor="@color/black"
-                android:layout_marginBottom="10dp"
+                android:hint="Title"
                 android:inputType="text"
-                android:hint="Title" />
+                android:textColor="@color/black"
+                android:textColorHint="@color/my_grey_dark"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/bodyTextET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
                 android:layout_below="@+id/titleET"
                 android:background="@drawable/bg_newpost_et_bg"
                 android:paddingVertical="20dp"
                 android:textColorHint="@color/my_grey_dark"
                 android:textColor="@color/black"
-                android:layout_marginBottom="10dp"
                 android:hint="body text" />
 
         </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/addImageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <!--<Button
+            android:id="@+id/addImgBtn"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Add Image"
+            app:icon="@drawable/baseline_image_24"
+            app:iconTint="@color/black"
+            />-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_image_24"/>
 
     </LinearLayout>
 
