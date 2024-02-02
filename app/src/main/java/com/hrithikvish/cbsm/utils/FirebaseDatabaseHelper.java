@@ -1,6 +1,7 @@
 package com.hrithikvish.cbsm.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,20 +13,28 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.hrithikvish.cbsm.HomeActivity;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class FirebaseDatabaseHelper {
 
     FirebaseAuth auth;
     Context context;
     DatabaseReference databaseReference;
+    ActivityFinisher activityFinisher;
 
     public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, DatabaseReference databaseReference) {
         this.context = context;
         this.auth = auth;
         this.databaseReference = databaseReference;
+    }
+
+    public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, DatabaseReference databaseReference, ActivityFinisher activityFinisher) {
+        this.context = context;
+        this.auth = auth;
+        this.databaseReference = databaseReference;
+        this.activityFinisher = activityFinisher;
     }
 
     public void addUserIntoFbDb(String email, String pass) {
@@ -43,8 +52,10 @@ public class FirebaseDatabaseHelper {
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()) {
                                 Toast.makeText(context, "User added in DB", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(context, HomeActivity.class);
+                                context.startActivity(intent);
                             } else {
-                                Toast.makeText(context, "Failed to add in DB", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Oops! Something went wrong. Try Again.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -77,14 +88,14 @@ public class FirebaseDatabaseHelper {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()) {
+                                databaseReference.child("PostIdGenerator").child("currentId").setValue(postID+1);
                                 Toast.makeText(context, "Post Added into Fb Db", Toast.LENGTH_SHORT).show();
+                                activityFinisher.finishActivity();
                             } else {
                                 Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-
-                    databaseReference.child("PostIdGenerator").child("currentId").setValue(postID+1);
 
                 } else {
                     databaseReference.child("PostIdGenerator").child("currentId").setValue(0);

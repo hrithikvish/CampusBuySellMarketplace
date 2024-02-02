@@ -145,9 +145,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
                     setSharedPref(true);
-
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("user", auth.getCurrentUser());
                     startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();

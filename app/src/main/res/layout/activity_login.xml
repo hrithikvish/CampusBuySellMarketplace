@@ -28,10 +28,11 @@
             android:layout_height="wrap_content"
             android:textSize="30sp"
             android:elevation="5dp"
+            android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_alignBottom="@id/img"
             android:textAlignment="center"
-            android:text="Welcome Back"/>
+            android:text="Log in to Cambus"/>
 
     </RelativeLayout>
 

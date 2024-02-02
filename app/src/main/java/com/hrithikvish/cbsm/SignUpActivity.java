@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.util.IOUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
@@ -31,7 +32,11 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
+import com.hrithikvish.cbsm.utils.ActivityFinisher;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
+
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -53,7 +58,7 @@ public class SignUpActivity extends AppCompatActivity {
         googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
 
-        binding.goToLoginPageText.setOnClickListener(view-> {
+        binding.goToLoginPageText.setOnClickListener(view -> {
             startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
             finish();
         });
@@ -62,21 +67,21 @@ public class SignUpActivity extends AppCompatActivity {
 
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
-        binding.signUpBtn.setOnClickListener(view-> {
+        binding.signUpBtn.setOnClickListener(view -> {
             String email = binding.emailET.getText().toString().trim();
             String pass = binding.passET.getText().toString().trim();
             String conPass = binding.conPassET.getText().toString().trim();
-            if(!email.isEmpty() && !pass.isEmpty() && !conPass.isEmpty()) {
+            if (!email.isEmpty() && !pass.isEmpty() && !conPass.isEmpty()) {
                 changeRegBtnToProgBar();
                 signUpUsingEmailPass(email, pass, conPass);
             } else {
-                if(email.isEmpty()) {
+                if (email.isEmpty()) {
                     binding.emailET.setError("Enter Email");
                 }
-                if(pass.isEmpty()) {
+                if (pass.isEmpty()) {
                     binding.passET.setError("Enter Password");
                 }
-                if(conPass.isEmpty()) {
+                if (conPass.isEmpty()) {
                     binding.conPassET.setError("Re Enter Password");
                 }
             }
@@ -89,9 +94,7 @@ public class SignUpActivity extends AppCompatActivity {
             activityResultLauncher.launch(signInIntent);
         });
 
-        /*binding.phoneSignUp.setOnClickListener(view-> {
-            Toast.makeText(SignUpActivity.this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
-        });*/
+        //College
 
     }
 
@@ -100,6 +103,7 @@ public class SignUpActivity extends AppCompatActivity {
         binding.googleSignUp.setText("");
         googleSignUnBtn.setIcon(null);
     }
+
     private void changeRegBtnToProgBar() {
         binding.signUpBar.setVisibility(View.VISIBLE);
         binding.signUpBtn.setText("");
@@ -117,6 +121,7 @@ public class SignUpActivity extends AppCompatActivity {
         binding.googleSignUp.setText("Continue with Google");
         googleSignUnBtn.setIconResource(R.drawable.icon_google);
     }
+
     private void changeBackDefaultRegBtn() {
         binding.signUpBar.setVisibility(View.GONE);
         binding.signUpBtn.setText("Register");
@@ -124,17 +129,13 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     private void signUpUsingEmailPass(String email, String pass, String conPass) {
-        if(validateData(email, pass, conPass)) {
+        if (validateData(email, pass, conPass)) {
             auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         setSharedPref(true);
-                        //addUserIntoFbDb(email, pass);
                         addUserDataInFirebaseDatabase(email, pass);
-
-                        Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                        startActivity(intent.putExtra("user", auth.getCurrentUser()));
                     } else {
                         Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         changeBackDefaultRegBtn();
@@ -153,48 +154,16 @@ public class SignUpActivity extends AppCompatActivity {
         firebaseDatabaseHelper.addUserIntoFbDb(email, pass);
     }
 
-    /*private void addUserIntoFbDb(String email, String pass) {
-        final DatabaseReference databaseReference;
-        String uid = auth.getCurrentUser().getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!snapshot.child("Users").child(uid).exists()) {
-                    HashMap<String, Object> userData = new HashMap<>();
-                    userData.put("email", email);
-                    userData.put("password", pass);
-
-                    databaseReference.child("Users").child(uid).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                Toast.makeText(SignUpActivity.this, "User added in DB", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(SignUpActivity.this, "Failed to add in DB", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }*/
-
     private boolean validateData(String email, String pass, String conPass) {
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             binding.emailET.setError("Invalid Email");
             return false;
         }
-        if(pass.length() < 8) {
+        if (pass.length() < 8) {
             binding.passET.setError("Password Length must be 8 or more");
             return false;
         }
-        if(!conPass.equals(pass)) {
+        if (!conPass.equals(pass)) {
             binding.conPassET.setError("Password doesn't match");
             return false;
         }
@@ -204,7 +173,7 @@ public class SignUpActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult o) {
-            if(o.getResultCode() == RESULT_OK) {
+            if (o.getResultCode() == RESULT_OK) {
                 Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(o.getData());
                 try {
                     GoogleSignInAccount googleSignInAccount = accountTask.getResult(ApiException.class);
@@ -212,7 +181,7 @@ public class SignUpActivity extends AppCompatActivity {
                     auth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()) {
+                            if (task.isSuccessful()) {
                                 setSharedPref(true);
                                 auth = FirebaseAuth.getInstance();
                                 FirebaseUser user = auth.getCurrentUser();
@@ -220,7 +189,6 @@ public class SignUpActivity extends AppCompatActivity {
                                 addUserDataInFirebaseDatabase(email, "***No Password***");
 
                                 Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                                intent.putExtra("user", auth.getCurrentUser());
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Registration Failed, Try Again!", Toast.LENGTH_SHORT).show();

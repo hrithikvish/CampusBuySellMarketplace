@@ -8,18 +8,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
-
-import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -33,8 +27,6 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
-//
-//        binding.userNameText.setText(Objects.requireNonNull(Objects.requireNonNull(auth.getCurrentUser()).getDisplayName()).isEmpty() ? auth.getCurrentUser().getEmail() : auth.getCurrentUser().getDisplayName());
 
         binding.logoutBtn.setOnClickListener(view-> {
             auth.signOut();
@@ -65,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        binding.bottomNavView.setSelectedItemId(R.id.navProfile);
+        binding.bottomNavView.setSelectedItemId(R.id.navHome);
 
     }
 

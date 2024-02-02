@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="20dp"
+    android:background="@color/white"
     tools:context=".NewPostActivity">
 
     <LinearLayout
@@ -38,16 +39,35 @@
                 android:layout_height="40dp"
                 android:src="@drawable/baseline_cancel_24"/>
 
-            <Button
-                android:id="@+id/nextBtn"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.Button"
-                android:background="@drawable/bg_etbg"
-                android:textColor="@color/white"
-                android:text="Next"
-                android:layout_alignParentEnd="true"
-                android:textAllCaps="false" />
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/postBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:indeterminateTint="@color/white"
+                    android:elevation="5dp"
+                    android:visibility="gone"
+                    android:layout_centerVertical="true"
+                    android:layout_alignStart="@+id/postBtn"
+                    android:layout_alignEnd="@+id/postBtn"/>
+
+                <Button
+                    android:id="@+id/postBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:background="@drawable/bg_etbg"
+                    android:textColor="@color/white"
+                    android:text="Post"
+                    android:layout_alignParentEnd="true"
+                    android:textAllCaps="false" />
+
+            </RelativeLayout>
+
+
 
         </RelativeLayout>
 
