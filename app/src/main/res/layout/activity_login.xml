@@ -27,7 +27,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="30sp"
-            android:elevation="5dp"
             android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_alignBottom="@id/img"
@@ -67,11 +66,20 @@
             android:textStyle="bold"
             android:background="@drawable/bg_etbg"
             android:textColorHint="@color/my_grey_dark"
-            android:layout_marginBottom="20dp"
             android:hint="Enter password"
             android:textColor="@color/black"
             android:inputType="textPassword"
             android:layout_below="@+id/emailET"/>
+
+        <TextView
+            android:id="@+id/forgotPassText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Forgot password?"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -98,6 +106,7 @@
                 android:layout_gravity="center_horizontal"
                 style="@style/Widget.MaterialComponents.Button"
                 android:text="Login"
+                android:layout_marginTop="20dp"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
                 android:background="@drawable/bg_etbg"

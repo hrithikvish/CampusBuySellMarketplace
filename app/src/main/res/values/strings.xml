@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Cambus</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="reset_your_pass_sentence">Enter your email address and we\'ll send you a link to reset your password</string>
 </resources>

@@ -37,7 +37,7 @@ public class FirebaseDatabaseHelper {
         this.activityFinisher = activityFinisher;
     }
 
-    public void addUserIntoFbDb(String email, String pass) {
+    public void addUserIntoFbDb(String email) {
         String uid = auth.getCurrentUser().getUid();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -45,7 +45,6 @@ public class FirebaseDatabaseHelper {
                 if(!snapshot.child("Users").child(uid).exists()) {
                     HashMap<String, Object> userData = new HashMap<>();
                     userData.put("email", email);
-                    userData.put("password", pass);
 
                     databaseReference.child("Users").child(uid).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

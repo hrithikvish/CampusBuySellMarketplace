@@ -65,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         binding.googleSignIn.setOnClickListener(view -> {
-            changeGoogleBtnToProgBar();
             Intent signInIntent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(signInIntent);
         });
@@ -73,6 +72,10 @@ public class LoginActivity extends AppCompatActivity {
         binding.goToSignUpPageText.setOnClickListener(view-> {
             startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
             finish();
+        });
+
+        binding.forgotPassText.setOnClickListener(view-> {
+            startActivity(new Intent(LoginActivity.this, ForgotPassActivity.class));
         });
 
     }
@@ -124,7 +127,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         changeBackDefaultLoginBtn();
-        changeBackDefaultGoogleBtn();
     }
 
     private void changeBackDefaultLoginBtn() {

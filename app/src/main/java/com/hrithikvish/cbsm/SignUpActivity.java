@@ -10,8 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -20,7 +25,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.util.IOUtils;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
@@ -36,6 +43,10 @@ import com.hrithikvish.cbsm.utils.ActivityFinisher;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -88,15 +99,39 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         binding.googleSignUp.setOnClickListener(view -> {
-            changeGoogleBtnToProgBar();
-
             Intent signInIntent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(signInIntent);
         });
 
-        //College
+        //decompressing Colleges_lIST GZip
+        List<String> colleges = new ArrayList<>();
+        try {
+            GZIPInputStream gzipInputStream = decompressCollegeGz();
+            // Read decompressed data into a byte array
+            byte[] data = IOUtils.toByteArray(gzipInputStream);
+            // Convert byte array to string
+            String allClgesString = new String(data, StandardCharsets.UTF_8);
+            String[] individualColleges = allClgesString.split("\n");
+            colleges.addAll(Arrays.asList(individualColleges));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+        //College
+        ArrayAdapter<String> adapter = null;
+        try {
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, colleges);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        binding.clgET.setAdapter(adapter);
     }
+
+    private GZIPInputStream decompressCollegeGz() throws Exception{
+        InputStream inputStream = getResources().openRawResource(R.raw.colleges_list_txt);
+        return new GZIPInputStream(inputStream);
+    }
+
 
     private void changeGoogleBtnToProgBar() {
         binding.googleBar.setVisibility(View.VISIBLE);
@@ -112,7 +147,6 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        changeBackDefaultGoogleBtn();
         changeBackDefaultRegBtn();
     }
 
@@ -135,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         setSharedPref(true);
-                        addUserDataInFirebaseDatabase(email, pass);
+                        addUserDataInFirebaseDatabase(email);
                     } else {
                         Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         changeBackDefaultRegBtn();
@@ -147,11 +181,11 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void addUserDataInFirebaseDatabase(String email, String pass) {
+    private void addUserDataInFirebaseDatabase(String email) {
         DatabaseReference databaseReference;
         databaseReference = FirebaseDatabase.getInstance().getReference();
         FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, databaseReference);
-        firebaseDatabaseHelper.addUserIntoFbDb(email, pass);
+        firebaseDatabaseHelper.addUserIntoFbDb(email);
     }
 
     private boolean validateData(String email, String pass, String conPass) {
@@ -186,10 +220,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 auth = FirebaseAuth.getInstance();
                                 FirebaseUser user = auth.getCurrentUser();
                                 String email = user.getEmail();
-                                addUserDataInFirebaseDatabase(email, "***No Password***");
-
-                                Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                                startActivity(intent);
+                                addUserDataInFirebaseDatabase(email);
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Registration Failed, Try Again!", Toast.LENGTH_SHORT).show();
                             }
