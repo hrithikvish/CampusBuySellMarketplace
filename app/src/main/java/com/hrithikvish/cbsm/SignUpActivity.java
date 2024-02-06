@@ -10,13 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,9 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.util.IOUtils;
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
@@ -39,8 +33,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
-import com.hrithikvish.cbsm.utils.ActivityFinisher;
+import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
+import com.hrithikvish.cbsm.utils.SharedPrefManager;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -52,10 +47,10 @@ import java.util.zip.GZIPInputStream;
 public class SignUpActivity extends AppCompatActivity {
 
     ActivitySignUpBinding binding;
+    SharedPrefManager sharedPrefManager;
     FirebaseAuth auth;
     GoogleSignInClient googleSignInClient;
     String clientId = "751206525517-rbhuic3hspp5k5hpohgd9ghp324mbj05.apps.googleusercontent.com";
-
     MaterialButton googleSignUnBtn;
 
 
@@ -66,24 +61,23 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        sharedPrefManager = new SharedPrefManager(SignUpActivity.this);
         googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
+        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(clientId).requestEmail().build();
+        googleSignInClient = GoogleSignIn.getClient(this, options);
 
         binding.goToLoginPageText.setOnClickListener(view -> {
             startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
             finish();
         });
 
-        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(clientId).requestEmail().build();
-
-        googleSignInClient = GoogleSignIn.getClient(this, options);
-
         binding.signUpBtn.setOnClickListener(view -> {
             String email = binding.emailET.getText().toString().trim();
             String pass = binding.passET.getText().toString().trim();
             String conPass = binding.conPassET.getText().toString().trim();
             if (!email.isEmpty() && !pass.isEmpty() && !conPass.isEmpty()) {
-                changeRegBtnToProgBar();
+                changeRegBtnToLoading(true);
                 signUpUsingEmailPass(email, pass, conPass);
             } else {
                 if (email.isEmpty()) {
@@ -107,9 +101,9 @@ public class SignUpActivity extends AppCompatActivity {
         List<String> colleges = new ArrayList<>();
         try {
             GZIPInputStream gzipInputStream = decompressCollegeGz();
-            // Read decompressed data into a byte array
+
             byte[] data = IOUtils.toByteArray(gzipInputStream);
-            // Convert byte array to string
+
             String allClgesString = new String(data, StandardCharsets.UTF_8);
             String[] individualColleges = allClgesString.split("\n");
             colleges.addAll(Arrays.asList(individualColleges));
@@ -120,7 +114,7 @@ public class SignUpActivity extends AppCompatActivity {
         //College
         ArrayAdapter<String> adapter = null;
         try {
-            adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, colleges);
+            adapter = new ArrayAdapter<>(this, R.layout.college_dropdown_layout, colleges);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -132,35 +126,21 @@ public class SignUpActivity extends AppCompatActivity {
         return new GZIPInputStream(inputStream);
     }
 
-
-    private void changeGoogleBtnToProgBar() {
-        binding.googleBar.setVisibility(View.VISIBLE);
-        binding.googleSignUp.setText("");
-        googleSignUnBtn.setIcon(null);
-    }
-
-    private void changeRegBtnToProgBar() {
-        binding.signUpBar.setVisibility(View.VISIBLE);
-        binding.signUpBtn.setText("");
+    private void changeRegBtnToLoading(Boolean isLoading) {
+        if(isLoading) {
+            binding.signUpBar.setVisibility(View.VISIBLE);
+            binding.signUpBtn.setText("");
+        } else {
+            binding.signUpBar.setVisibility(View.GONE);
+            binding.signUpBtn.setText("Register");
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        changeBackDefaultRegBtn();
+        changeRegBtnToLoading(false);
     }
-
-    private void changeBackDefaultGoogleBtn() {
-        binding.googleBar.setVisibility(View.GONE);
-        binding.googleSignUp.setText("Continue with Google");
-        googleSignUnBtn.setIconResource(R.drawable.icon_google);
-    }
-
-    private void changeBackDefaultRegBtn() {
-        binding.signUpBar.setVisibility(View.GONE);
-        binding.signUpBtn.setText("Register");
-    }
-
 
     private void signUpUsingEmailPass(String email, String pass, String conPass) {
         if (validateData(email, pass, conPass)) {
@@ -168,16 +148,16 @@ public class SignUpActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        setSharedPref(true);
-                        addUserDataInFirebaseDatabase(email);
+                        sharedPrefManager.putBoolean(Constants.SHARED_PREFERENCE_KEY, true);
+                        //addUserDataInFirebaseDatabase(email);
                     } else {
                         Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                        changeBackDefaultRegBtn();
+                        changeRegBtnToLoading(false);
                     }
                 }
             });
         } else {
-            changeBackDefaultRegBtn();
+            changeRegBtnToLoading(false);
         }
     }
 
@@ -216,11 +196,11 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                setSharedPref(true);
+                                sharedPrefManager.putBoolean(Constants.SHARED_PREFERENCE_KEY, true);
                                 auth = FirebaseAuth.getInstance();
                                 FirebaseUser user = auth.getCurrentUser();
                                 String email = user.getEmail();
-                                addUserDataInFirebaseDatabase(email);
+                                //addUserDataInFirebaseDatabase(email);
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Registration Failed, Try Again!", Toast.LENGTH_SHORT).show();
                             }
@@ -232,12 +212,5 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
     });
-
-    private void setSharedPref(boolean isLoggedIn) {
-        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean("isLoggedIn", isLoggedIn);
-        editor.apply();
-    }
 
 }

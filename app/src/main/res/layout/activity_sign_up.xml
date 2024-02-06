@@ -12,25 +12,23 @@
     <RelativeLayout
         android:id="@+id/welcomeTextLayout"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/signUpFormLayout"
-        android:layout_marginBottom="20dp"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_marginBottom="20dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/img"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/illus_signup"/>
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
+            android:src="@drawable/illus_stud_on_bookd"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="30sp"
-            android:elevation="5dp"
             android:textStyle="bold"
             android:textColor="@color/black"
-            android:layout_alignBottom="@id/img"
+            android:layout_below="@id/img"
             android:textAlignment="center"
             android:text="Welcome to Cambus"/>
 
@@ -66,11 +64,13 @@
             android:layout_height="50dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/bg_etbg"
-            android:ellipsize="end"
+            android:popupBackground="@color/my_grey"
             android:hint="Select your college"
+            android:completionThreshold="1"
+            android:dropDownHeight="wrap_content"
+            android:dropDownWidth="wrap_content"
             android:paddingHorizontal="20dp"
             android:paddingVertical="5dp"
-            android:scrollHorizontally="true"
             android:textColor="@color/black"
             android:textColorHint="@color/my_grey_dark"
             android:textStyle="bold" />

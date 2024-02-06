@@ -53,14 +53,19 @@ public class LoginActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
         binding.loginBtn.setOnClickListener(view-> {
-            changeLoginBtnToProgBar();
+            changeLoginBtnToProgBar(true);
             String email = binding.emailET.getText().toString();
             String pass = binding.passET.getText().toString();
             if(!email.isEmpty() && !pass.isEmpty()) {
                 signInUsingEmailPass(email, pass);
             } else {
-                displayEmptyErrorMsg();
-                changeBackDefaultLoginBtn();
+                if (email.isEmpty()) {
+                    binding.emailET.setError("Enter Email");
+                }
+                if (pass.isEmpty()) {
+                    binding.passET.setError("Enter Password");
+                }
+                changeLoginBtnToProgBar(false);
             }
         });
 
@@ -109,35 +114,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     });
 
-    private void displayEmptyErrorMsg() {
-        binding.emailET.setError("Enter Email");
-        binding.passET.setError("Enter Password");
-    }
-
-    private void changeLoginBtnToProgBar() {
-        binding.loginBtn.setText("");
-        binding.progressBar.setVisibility(View.VISIBLE);
-    }
-    private void changeGoogleBtnToProgBar() {
-        binding.googleSignIn.setText("");
-        binding.googleBar.setVisibility(View.VISIBLE);
+    private void changeLoginBtnToProgBar(Boolean isLoading) {
+        if(isLoading) {
+            binding.loginBtn.setText("");
+            binding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.loginBtn.setText("Login");
+            binding.progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        changeBackDefaultLoginBtn();
-    }
-
-    private void changeBackDefaultLoginBtn() {
-        binding.loginBtn.setText("Login");
-        binding.progressBar.setVisibility(View.GONE);
-    }
-
-    private void changeBackDefaultGoogleBtn() {
-        binding.googleBar.setVisibility(View.GONE);
-        binding.googleSignIn.setText("Continue with Google");
-        googleSignInBtn.setIconResource(R.drawable.icon_google);
+        changeLoginBtnToProgBar(false);
     }
 
     private void signInUsingEmailPass(String email, String pass) {
@@ -151,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    changeBackDefaultLoginBtn();
+                    changeLoginBtnToProgBar(false);
                 }
             }
         });

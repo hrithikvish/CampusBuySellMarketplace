@@ -5,4 +5,12 @@
     <color name="my_grey_dark">#a1a1a2</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--light-->
+    <color name="activity_bg_light">#FFFFFFFF</color>
+    <color name="text_color_light">#FF000000</color>
+
+    <!--dark-->
+    <color name="activity_bg_dark">#3E3E3E</color>
+    <color name="text_color_dark">#FFFFFFFF</color>
 </resources>
