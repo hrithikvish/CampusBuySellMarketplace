@@ -31,7 +31,7 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
         binding.postBtn.setOnClickListener(view->{
             String title = binding.titleET.getText().toString().trim();
             String body = binding.bodyTextET.getText().toString().trim();
-            changePostBtnToProgBar();
+            changePostBtnToProgBar(true);
             addPostInFbDb(title, body);
         });
 
@@ -40,7 +40,7 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
     @Override
     protected void onStop() {
         super.onStop();
-        changeBackDefaultPostBtn();
+        changePostBtnToProgBar(false);
     }
 
     private void addPostInFbDb(String postTitle, String postBody) {
@@ -49,13 +49,14 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
         FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(NewPostActivity.this, auth, databaseReference, this::finishActivity);
         firebaseDatabaseHelper.addPostIntoFbDb(postTitle, postBody);
     }
-    private void changePostBtnToProgBar() {
-        binding.postBar.setVisibility(View.VISIBLE);
-        binding.postBtn.setText("");
-    }
-    private void changeBackDefaultPostBtn() {
-        binding.postBar.setVisibility(View.GONE);
-        binding.postBtn.setText("Post");
+    private void changePostBtnToProgBar(Boolean isLoading) {
+        if(isLoading) {
+            binding.postBar.setVisibility(View.VISIBLE);
+            binding.postBtn.setText("");
+        } else {
+            binding.postBar.setVisibility(View.GONE);
+            binding.postBtn.setText("Post");
+        }
     }
 
     @Override

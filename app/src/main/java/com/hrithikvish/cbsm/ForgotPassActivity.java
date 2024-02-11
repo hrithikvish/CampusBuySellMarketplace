@@ -43,6 +43,7 @@ public class ForgotPassActivity extends AppCompatActivity {
                 });
             } else {
                 binding.emailET.setError("Enter Email Address");
+                changeResetPassBtnToProgBar(false);
             }
         });
     }

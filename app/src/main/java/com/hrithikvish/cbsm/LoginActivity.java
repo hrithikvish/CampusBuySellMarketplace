@@ -26,17 +26,24 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivityLoginBinding;
+import com.hrithikvish.cbsm.utils.Constants;
+import com.hrithikvish.cbsm.utils.SharedPrefManager;
 
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
+    SharedPrefManager sharedPrefManager;
     FirebaseAuth auth;
     GoogleSignInClient googleSignInClient;
     MaterialButton googleSignInBtn;
-    String clientId = "751206525517-rbhuic3hspp5k5hpohgd9ghp324mbj05.apps.googleusercontent.com";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +53,11 @@ public class LoginActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
+        sharedPrefManager = new SharedPrefManager(LoginActivity.this);
 
         googleSignInBtn = (MaterialButton) binding.googleSignIn;
 
-        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(clientId).requestEmail().build();
+        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, options);
 
         binding.loginBtn.setOnClickListener(view-> {
@@ -70,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         binding.googleSignIn.setOnClickListener(view -> {
+            changeGoogleRegBtnToLoading(true);
             Intent signInIntent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(signInIntent);
         });
@@ -85,6 +94,30 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        changeLoginBtnToProgBar(false);
+        changeGoogleRegBtnToLoading(false);
+    }
+
+    private void signInUsingEmailPass(String email, String pass) {
+        auth = FirebaseAuth.getInstance();
+        auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()) {
+                    sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    changeLoginBtnToProgBar(false);
+                }
+            }
+        });
+    }
+
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult o) {
@@ -97,13 +130,29 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
-                                setSharedPref(true);
-                                auth = FirebaseAuth.getInstance();
-                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                intent.putExtra("user", auth.getCurrentUser());
-                                startActivity(intent);
+                                String uid = auth.getUid();
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if(!snapshot.child("Users").child(uid).child("clg").exists()) {
+                                            Toast.makeText(LoginActivity.this, "User Not Found, Sign Up", Toast.LENGTH_LONG).show();
+                                            changeGoogleRegBtnToLoading(false);
+                                        } else {
+                                            sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
+                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                            startActivity(intent);
+                                        }
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
                             } else {
                                 Toast.makeText(LoginActivity.this, "Login Failed, Try Again!", Toast.LENGTH_SHORT).show();
+                                changeGoogleRegBtnToLoading(false);
                             }
                         }
                     });
@@ -124,33 +173,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        changeLoginBtnToProgBar(false);
-    }
-
-    private void signInUsingEmailPass(String email, String pass) {
-        auth = FirebaseAuth.getInstance();
-        auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
-                    setSharedPref(true);
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    changeLoginBtnToProgBar(false);
-                }
-            }
-        });
-    }
-
-    private void setSharedPref(boolean isLoggedIn) {
-        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean("isLoggedIn", isLoggedIn);
-        editor.apply();
+    private void changeGoogleRegBtnToLoading(Boolean isLoading) {
+        if(isLoading) {
+            binding.googleSignIn.setText("");
+            googleSignInBtn.setIcon(null);
+            binding.googleBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.googleBar.setVisibility(View.GONE);
+            googleSignInBtn.setIconResource(R.drawable.icon_google);
+            binding.googleSignIn.setText("Continue to Google");
+        }
     }
 }

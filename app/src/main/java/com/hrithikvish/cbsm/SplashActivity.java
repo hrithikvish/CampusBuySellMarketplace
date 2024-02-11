@@ -24,7 +24,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                boolean isLoggedIn = sharedPrefManager.getBoolean(Constants.SHARED_PREFERENCE_KEY);
+                boolean isLoggedIn = sharedPrefManager.getBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY);
 
                 if(isLoggedIn) {
                     startActivity(new Intent(SplashActivity.this, HomeActivity.class));

@@ -23,11 +23,13 @@ public class FirebaseDatabaseHelper {
     Context context;
     DatabaseReference databaseReference;
     ActivityFinisher activityFinisher;
+    SharedPrefManager sharedPrefManager;
 
     public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, DatabaseReference databaseReference) {
         this.context = context;
         this.auth = auth;
         this.databaseReference = databaseReference;
+        this.sharedPrefManager = new SharedPrefManager(context);
     }
 
     public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, DatabaseReference databaseReference, ActivityFinisher activityFinisher) {
@@ -35,30 +37,36 @@ public class FirebaseDatabaseHelper {
         this.auth = auth;
         this.databaseReference = databaseReference;
         this.activityFinisher = activityFinisher;
+        this.sharedPrefManager = new SharedPrefManager(context);
     }
 
-    public void addUserIntoFbDb(String email) {
+    public void addUserIntoFbDb(String email, String clg) {
         String uid = auth.getCurrentUser().getUid();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!snapshot.child("Users").child(uid).exists()) {
-                    HashMap<String, Object> userData = new HashMap<>();
-                    userData.put("email", email);
+                /*if(!snapshot.child("Users").child(uid).exists()) {
 
-                    databaseReference.child("Users").child(uid).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                Toast.makeText(context, "User added in DB", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(context, HomeActivity.class);
-                                context.startActivity(intent);
-                            } else {
-                                Toast.makeText(context, "Oops! Something went wrong. Try Again.", Toast.LENGTH_SHORT).show();
-                            }
+                } else {
+                    //if user exists
+                }*/
+                HashMap<String, Object> userData = new HashMap<>();
+                userData.put("email", email);
+                userData.put("clg", clg);
+
+                databaseReference.child("Users").child(uid).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
+                            Toast.makeText(context, "User added in DB", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, HomeActivity.class);
+                            context.startActivity(intent);
+                        } else {
+                            Toast.makeText(context, "Oops! Something went wrong. Try Again.", Toast.LENGTH_SHORT).show();
                         }
-                    });
-                }
+                    }
+                });
             }
 
             @Override

@@ -137,8 +137,8 @@
                 android:elevation="5dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_centerVertical="true"
-                android:layout_alignStart="@+id/googleSignUp"
-                android:layout_alignEnd="@+id/googleSignUp"/>
+                android:layout_alignStart="@+id/googleSignIn"
+                android:layout_alignEnd="@+id/googleSignIn"/>
 
             <Button
                 android:id="@+id/googleSignIn"

@@ -30,8 +30,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
 import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
@@ -93,10 +96,15 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         binding.googleSignUp.setOnClickListener(view -> {
+            changeGoogleRegBtnToLoading(true);
             Intent signInIntent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(signInIntent);
         });
 
+        setClgAdapter();
+    }
+
+    private void setClgAdapter() {
         //decompressing Colleges_lIST GZip
         List<String> colleges = new ArrayList<>();
         try {
@@ -126,30 +134,22 @@ public class SignUpActivity extends AppCompatActivity {
         return new GZIPInputStream(inputStream);
     }
 
-    private void changeRegBtnToLoading(Boolean isLoading) {
-        if(isLoading) {
-            binding.signUpBar.setVisibility(View.VISIBLE);
-            binding.signUpBtn.setText("");
-        } else {
-            binding.signUpBar.setVisibility(View.GONE);
-            binding.signUpBtn.setText("Register");
-        }
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
         changeRegBtnToLoading(false);
+        changeGoogleRegBtnToLoading(false);
     }
 
     private void signUpUsingEmailPass(String email, String pass, String conPass) {
         if (validateData(email, pass, conPass)) {
+            String clg = binding.clgET.getText().toString().trim();
             auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        sharedPrefManager.putBoolean(Constants.SHARED_PREFERENCE_KEY, true);
-                        //addUserDataInFirebaseDatabase(email);
+                        sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
+                        addUserDataInFirebaseDatabase(email, clg);
                     } else {
                         Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         changeRegBtnToLoading(false);
@@ -159,29 +159,6 @@ public class SignUpActivity extends AppCompatActivity {
         } else {
             changeRegBtnToLoading(false);
         }
-    }
-
-    private void addUserDataInFirebaseDatabase(String email) {
-        DatabaseReference databaseReference;
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, databaseReference);
-        firebaseDatabaseHelper.addUserIntoFbDb(email);
-    }
-
-    private boolean validateData(String email, String pass, String conPass) {
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.emailET.setError("Invalid Email");
-            return false;
-        }
-        if (pass.length() < 8) {
-            binding.passET.setError("Password Length must be 8 or more");
-            return false;
-        }
-        if (!conPass.equals(pass)) {
-            binding.conPassET.setError("Password doesn't match");
-            return false;
-        }
-        return true;
     }
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -196,13 +173,32 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                sharedPrefManager.putBoolean(Constants.SHARED_PREFERENCE_KEY, true);
+                                //sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
                                 auth = FirebaseAuth.getInstance();
                                 FirebaseUser user = auth.getCurrentUser();
                                 String email = user.getEmail();
-                                //addUserDataInFirebaseDatabase(email);
+
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if(snapshot.child("Users").child(auth.getUid()).exists()) {
+                                            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
+                                        } else {
+                                            Intent intent = new Intent(SignUpActivity.this, SelectCollegeActivity.class);
+                                            intent.putExtra("googleEmail", email);
+                                            startActivity(intent);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
                             } else {
-                                Toast.makeText(SignUpActivity.this, "Registration Failed, Try Again!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUpActivity.this, "Something went wrong, try again.", Toast.LENGTH_SHORT).show();
+                                changeGoogleRegBtnToLoading(false);
                             }
                         }
                     });
@@ -212,5 +208,54 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
     });
+
+    private void addUserDataInFirebaseDatabase(String email, String clg) {
+        DatabaseReference databaseReference;
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, databaseReference);
+        firebaseDatabaseHelper.addUserIntoFbDb(email, clg);
+    }
+
+    private boolean validateData(String email, String pass, String conPass) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.emailET.setError("Invalid Email");
+            return false;
+        }
+        if (pass.length() < 6) {
+            binding.passET.setError("Password Length must be 6 or more");
+            return false;
+        }
+        if (!conPass.equals(pass)) {
+            binding.conPassET.setError("Password doesn't match");
+            return false;
+        }
+        if(binding.clgET.getText().toString().isEmpty()) {
+            binding.clgET.setError("Select Your College");
+            return false;
+        }
+        return true;
+    }
+
+    private void changeRegBtnToLoading(Boolean isLoading) {
+        if(isLoading) {
+            binding.signUpBar.setVisibility(View.VISIBLE);
+            binding.signUpBtn.setText("");
+        } else {
+            binding.signUpBar.setVisibility(View.GONE);
+            binding.signUpBtn.setText("Register");
+        }
+    }
+
+    private void changeGoogleRegBtnToLoading(Boolean isLoading) {
+        if(isLoading) {
+            binding.googleSignUp.setText("");
+            googleSignUnBtn.setIcon(null);
+            binding.googleBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.googleBar.setVisibility(View.GONE);
+            googleSignUnBtn.setIconResource(R.drawable.icon_google);
+            binding.googleSignUp.setText("Continue to Google");
+        }
+    }
 
 }
