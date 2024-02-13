@@ -9,12 +9,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
 import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.SharedPrefManager;
@@ -25,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
     SharedPrefManager sharedPrefManager;
     GoogleSignInClient googleSignInClient;
     FirebaseAuth auth;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         sharedPrefManager = new SharedPrefManager(HomeActivity.this);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         binding.logoutBtn.setOnClickListener(view-> {
             auth.signOut();
@@ -66,6 +75,22 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         binding.bottomNavView.setSelectedItemId(R.id.navHome);
+
+        //user Profile
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = auth.getCurrentUser().getDisplayName();
+                String email = auth.getCurrentUser().getEmail();
+                String clgName = snapshot.child("Users").child(auth.getUid()).child("clg").getValue().toString();
+                UserProfile userProfile = new UserProfile(name, email, clgName);
+                sharedPrefManager.putObject(Constants.PROFILE_SHARED_PREF_KEY, userProfile);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 

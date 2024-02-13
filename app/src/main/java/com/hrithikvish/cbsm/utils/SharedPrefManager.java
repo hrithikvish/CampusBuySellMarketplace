@@ -3,6 +3,8 @@ package com.hrithikvish.cbsm.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.gson.Gson;
+
 public class SharedPrefManager {
     private final SharedPreferences sharedPreferences;
     public SharedPrefManager(Context context) {
@@ -13,6 +15,18 @@ public class SharedPrefManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(key, value);
         editor.apply();
+    }
+
+    public void putObject(String key, Object object) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String objectString = gson.toJson(object);
+        editor.putString(key, objectString);
+        editor.apply();
+    }
+
+    public String getObject(String key) {
+        return sharedPreferences.getString(key, null);
     }
 
     public Boolean getBoolean(String key) {

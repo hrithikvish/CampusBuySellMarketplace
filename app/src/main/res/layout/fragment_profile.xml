@@ -48,10 +48,10 @@
                 android:textAlignment="center"/>
 
             <TextView
-                android:id="@+id/uidText"
+                android:id="@+id/clgText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="UID: 1iugdsiugsa9ddhvud"
+                android:text="Loading..."
                 android:textSize="15sp"
                 android:layout_below="@+id/nameText"
                 android:textAlignment="center"
