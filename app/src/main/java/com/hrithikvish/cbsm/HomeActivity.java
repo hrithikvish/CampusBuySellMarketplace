@@ -1,23 +1,29 @@
 package com.hrithikvish.cbsm;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.MenuItem;
-
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hrithikvish.cbsm.databinding.ActivityHomeBinding;
+import com.hrithikvish.cbsm.utils.Constants;
+import com.hrithikvish.cbsm.utils.SharedPrefManager;
 
 public class HomeActivity extends AppCompatActivity {
 
     ActivityHomeBinding binding;
+    SharedPrefManager sharedPrefManager;
+    GoogleSignInClient googleSignInClient;
     FirebaseAuth auth;
 
     @Override
@@ -27,19 +33,22 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        sharedPrefManager = new SharedPrefManager(HomeActivity.this);
 
         binding.logoutBtn.setOnClickListener(view-> {
             auth.signOut();
-            setSharedPref(false);
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
+            googleSignInClient = GoogleSignIn.getClient(this, gso);
+            googleSignInClient.signOut();
+
+            sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, false);
             startActivity(new Intent(HomeActivity.this, SignUpActivity.class));
         });
 
         binding.bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
                 int id = item.getItemId();
-
                 if(id == R.id.navHome) {
                     loadFragment(new HomeFragment());
                 } else if (id == R.id.navExplore) {
@@ -52,7 +61,6 @@ public class HomeActivity extends AppCompatActivity {
                 } else {
                     loadFragment(new ProfileFragment());
                 }
-
                 return true;
             }
         });
@@ -68,11 +76,4 @@ public class HomeActivity extends AppCompatActivity {
         ft.commit();
     }
 
-    private void setSharedPref(Boolean isLoggedIn) {
-        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean("isLoggedIn", isLoggedIn);
-        System.out.println("logout Activity- isLoggedIn: " + pref.getBoolean("isLoggedIn", false));
-        editor.apply();
-    }
 }

@@ -1,16 +1,14 @@
 package com.hrithikvish.cbsm;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.common.util.IOUtils;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.hrithikvish.cbsm.databinding.ActivitySelectCollegeBinding;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
 
@@ -24,6 +22,7 @@ import java.util.zip.GZIPInputStream;
 public class SelectCollegeActivity extends AppCompatActivity {
     ActivitySelectCollegeBinding binding;
     FirebaseAuth auth;
+    FirebaseDatabaseHelper firebaseDatabaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +31,14 @@ public class SelectCollegeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SelectCollegeActivity.this, auth);
 
         Intent intent = getIntent();
         String googleEmail = intent.getStringExtra("googleEmail");
 
         binding.continueBtn.setOnClickListener(view -> {
             changeRegBtnToLoading(true);
-            addUserDataInFirebaseDatabase(googleEmail, binding.clgET.getText().toString().trim());
+            firebaseDatabaseHelper.addUserIntoFbDb(googleEmail, binding.clgET.getText().toString().trim());
         });
 
         setClgAdapter();
@@ -78,13 +78,6 @@ public class SelectCollegeActivity extends AppCompatActivity {
     private GZIPInputStream decompressCollegeGz() throws Exception{
         InputStream inputStream = getResources().openRawResource(R.raw.colleges_list_txt);
         return new GZIPInputStream(inputStream);
-    }
-
-    private void addUserDataInFirebaseDatabase(String email, String clg) {
-        DatabaseReference databaseReference;
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(SelectCollegeActivity.this, auth, databaseReference);
-        firebaseDatabaseHelper.addUserIntoFbDb(email, clg);
     }
 
     private void changeRegBtnToLoading(Boolean isLoading) {

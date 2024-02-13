@@ -1,13 +1,11 @@
 package com.hrithikvish.cbsm;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.hrithikvish.cbsm.databinding.ActivityNewPostBinding;
 import com.hrithikvish.cbsm.utils.ActivityFinisher;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
@@ -16,6 +14,7 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
 
     ActivityNewPostBinding binding;
     FirebaseAuth auth;
+    FirebaseDatabaseHelper firebaseDatabaseHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +22,7 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(NewPostActivity.this, auth, this::finishActivity);
 
         binding.backBtn.setOnClickListener(view->{
             finish();
@@ -32,7 +32,7 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
             String title = binding.titleET.getText().toString().trim();
             String body = binding.bodyTextET.getText().toString().trim();
             changePostBtnToProgBar(true);
-            addPostInFbDb(title, body);
+            firebaseDatabaseHelper.addPostIntoFbDb(title, body);
         });
 
     }
@@ -43,12 +43,6 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
         changePostBtnToProgBar(false);
     }
 
-    private void addPostInFbDb(String postTitle, String postBody) {
-        DatabaseReference databaseReference;
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(NewPostActivity.this, auth, databaseReference, this::finishActivity);
-        firebaseDatabaseHelper.addPostIntoFbDb(postTitle, postBody);
-    }
     private void changePostBtnToProgBar(Boolean isLoading) {
         if(isLoading) {
             binding.postBar.setVisibility(View.VISIBLE);

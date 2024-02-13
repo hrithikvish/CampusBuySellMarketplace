@@ -1,19 +1,18 @@
 package com.hrithikvish.cbsm;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.util.Patterns;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -53,9 +52,8 @@ public class SignUpActivity extends AppCompatActivity {
     SharedPrefManager sharedPrefManager;
     FirebaseAuth auth;
     GoogleSignInClient googleSignInClient;
-    String clientId = "751206525517-rbhuic3hspp5k5hpohgd9ghp324mbj05.apps.googleusercontent.com";
     MaterialButton googleSignUnBtn;
-
+    FirebaseDatabaseHelper firebaseDatabaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +62,12 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth);
         sharedPrefManager = new SharedPrefManager(SignUpActivity.this);
         googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
-        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(clientId).requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, options);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         binding.goToLoginPageText.setOnClickListener(view -> {
             startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
@@ -149,7 +148,7 @@ public class SignUpActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
-                        addUserDataInFirebaseDatabase(email, clg);
+                        firebaseDatabaseHelper.addUserIntoFbDb(email, clg);
                     } else {
                         Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         changeRegBtnToLoading(false);
@@ -208,13 +207,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
     });
-
-    private void addUserDataInFirebaseDatabase(String email, String clg) {
-        DatabaseReference databaseReference;
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        FirebaseDatabaseHelper firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, databaseReference);
-        firebaseDatabaseHelper.addUserIntoFbDb(email, clg);
-    }
 
     private boolean validateData(String email, String pass, String conPass) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {

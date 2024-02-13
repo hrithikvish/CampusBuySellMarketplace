@@ -30,8 +30,19 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/illus_college"
+            android:contentDescription="College Illustration" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textAlignment="center"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/baseline_home_work_24"/>
+            android:text="Your College"/>
 
         <AutoCompleteTextView
             android:id="@+id/clgET"

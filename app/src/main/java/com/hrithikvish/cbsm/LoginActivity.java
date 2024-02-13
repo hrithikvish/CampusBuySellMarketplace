@@ -1,17 +1,16 @@
 package com.hrithikvish.cbsm;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -34,8 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivityLoginBinding;
 import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.SharedPrefManager;
-
-import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 

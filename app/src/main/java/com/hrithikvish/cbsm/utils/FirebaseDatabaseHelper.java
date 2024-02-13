@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.HomeActivity;
 
@@ -25,23 +26,23 @@ public class FirebaseDatabaseHelper {
     ActivityFinisher activityFinisher;
     SharedPrefManager sharedPrefManager;
 
-    public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, DatabaseReference databaseReference) {
+    public FirebaseDatabaseHelper(Context context, FirebaseAuth auth) {
         this.context = context;
         this.auth = auth;
-        this.databaseReference = databaseReference;
         this.sharedPrefManager = new SharedPrefManager(context);
     }
 
-    public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, DatabaseReference databaseReference, ActivityFinisher activityFinisher) {
+    public FirebaseDatabaseHelper(Context context, FirebaseAuth auth, ActivityFinisher activityFinisher) {
         this.context = context;
         this.auth = auth;
-        this.databaseReference = databaseReference;
         this.activityFinisher = activityFinisher;
         this.sharedPrefManager = new SharedPrefManager(context);
     }
 
     public void addUserIntoFbDb(String email, String clg) {
         String uid = auth.getCurrentUser().getUid();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -78,18 +79,24 @@ public class FirebaseDatabaseHelper {
 
     public void addPostIntoFbDb(String postTitle, String postBody) {
         String uid = auth.getUid();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.child("PostIdGenerator").child("currentId").exists()) {
                     long postID = (long) snapshot.child("PostIdGenerator").child("currentId").getValue();
 
-                    String postId = "Post: " + (postID + 1);
+                    String postId = "Post " + (postID + 1);
 
                     HashMap<String, Object> newPostData = new HashMap<>();
                     newPostData.put("user", uid);
                     newPostData.put("title", postTitle);
                     newPostData.put("body", postBody);
+
+                    long clgId = (long) snapshot.child("Users").child(auth.getUid()).child("clgId").getValue();
+
+                    databaseReference.child("Colleges").child(clgId+"").child(postId).updateChildren(newPostData);
 
                     databaseReference.child("Posts").child(postId).updateChildren(newPostData).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -106,6 +113,7 @@ public class FirebaseDatabaseHelper {
 
                 } else {
                     databaseReference.child("PostIdGenerator").child("currentId").setValue(0);
+                    addPostIntoFbDb(postTitle, postBody);
                 }
             }
 
