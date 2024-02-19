@@ -85,6 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
             android:layout_gravity="center_horizontal">
 
             <ProgressBar
@@ -106,7 +107,6 @@
                 android:layout_gravity="center_horizontal"
                 style="@style/Widget.MaterialComponents.Button"
                 android:text="Login"
-                android:layout_marginTop="20dp"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
                 android:background="@drawable/bg_etbg"

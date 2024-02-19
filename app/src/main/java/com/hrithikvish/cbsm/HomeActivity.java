@@ -45,13 +45,14 @@ public class HomeActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         binding.logoutBtn.setOnClickListener(view-> {
-            auth.signOut();
+            //auth.signOut();
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
             googleSignInClient = GoogleSignIn.getClient(this, gso);
             googleSignInClient.signOut();
 
             sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, false);
-            startActivity(new Intent(HomeActivity.this, SignUpActivity.class));
+            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            finish();
         });
 
         binding.bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {

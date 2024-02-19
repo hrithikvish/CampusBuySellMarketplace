@@ -4,14 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingVertical="10dp"
+    android:paddingTop="10dp"
     android:paddingHorizontal="15dp"
+    android:background="@color/white"
     tools:context=".ProfileFragment">
 
     <LinearLayout
+        android:id="@+id/profDetailsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -41,6 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:text="Name Name"
+                android:textColor="@color/black"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="5dp"
@@ -51,11 +55,29 @@
                 android:id="@+id/clgText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                tools:text="College Name"
                 android:text="Loading..."
                 android:textSize="15sp"
+                android:textColor="@color/black"
                 android:layout_below="@+id/nameText"
                 android:textAlignment="center"
                 android:layout_centerVertical="true"/>
+
+            <Button
+                android:id="@+id/editProfileBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingVertical="5dp"
+                android:layout_below="@id/clgText"
+                android:paddingHorizontal="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/my_grey"
+                style="@style/Widget.MaterialComponents.Button"
+                android:text="Edit Profile"/>
+
 
             <!--<TextView
                 android:id="@+id/clgText"
@@ -71,6 +93,40 @@
         </RelativeLayout>
 
     </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/postsAndSavedTabLayout"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/profDetailsLayout"
+        android:backgroundTint="@color/white"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posts"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Saved"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <View
+        android:id="@+id/bottomBorder"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/postsAndSavedTabLayout"
+        android:background="@color/my_grey"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/postsAndSavedViewPager"
+        android:layout_width="match_parent"
+        android:paddingTop="10dp"
+        android:layout_below="@id/bottomBorder"
+        android:layout_height="match_parent"/>
+
 
 
 </RelativeLayout>

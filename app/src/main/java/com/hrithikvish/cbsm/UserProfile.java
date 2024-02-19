@@ -1,5 +1,7 @@
 package com.hrithikvish.cbsm;
 
+import java.util.Objects;
+
 public class UserProfile {
     private String name;
     private String email;
@@ -43,6 +45,5 @@ public class UserProfile {
                 ", clg='" + clg + '\'' +
                 '}';
     }
-
 
 }

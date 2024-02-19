@@ -39,13 +39,19 @@
         android:text="Dummy Logout"
         android:textAllCaps="false" />
 
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@+id/bottomNavView"
+        android:background="@color/my_grey"/>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:layout_alignParentBottom="true"
         android:elevation="5dp"
+        style="@style/ThemeOverlay.App.BottomNavigationView"
+        android:background="@color/white"
         app:labelVisibilityMode="labeled"
         android:paddingHorizontal="10dp"
         app:menu="@menu/bottom_nav_items" />

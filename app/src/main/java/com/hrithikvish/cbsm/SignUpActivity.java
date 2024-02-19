@@ -35,6 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
+import com.hrithikvish.cbsm.utils.ActivityFinisher;
 import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
 import com.hrithikvish.cbsm.utils.SharedPrefManager;
@@ -46,7 +47,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity implements ActivityFinisher {
 
     ActivitySignUpBinding binding;
     SharedPrefManager sharedPrefManager;
@@ -62,7 +63,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth);
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, this::finishActivity);
         sharedPrefManager = new SharedPrefManager(SignUpActivity.this);
         googleSignUnBtn = (MaterialButton) binding.googleSignUp;
         FirebaseApp.initializeApp(this);
@@ -189,11 +190,8 @@ public class SignUpActivity extends AppCompatActivity {
                                             startActivity(intent);
                                         }
                                     }
-
                                     @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
+                                    public void onCancelled(@NonNull DatabaseError error) {}
                                 });
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Something went wrong, try again.", Toast.LENGTH_SHORT).show();
@@ -250,4 +248,8 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void finishActivity() {
+        finish();
+    }
 }

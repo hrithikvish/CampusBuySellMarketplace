@@ -6,5 +6,9 @@
         <item name="android:textColor">@color/text_color_light</item>
     </style>
 
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
+        <item name="colorOnPrimary">@color/my_color_primary</item>
+    </style>
+
     <style name="Theme.CampusBuySellMarketplace" parent="Base.Theme.CampusBuySellMarketplace" />
 </resources>

@@ -9,60 +9,59 @@
     android:background="@color/white"
     tools:context=".NewPostActivity">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/addImageLayout"
-        android:layout_marginBottom="10dp"
-        android:orientation="vertical">
+        android:layout_marginBottom="20dp"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_cancel_24"/>
 
         <RelativeLayout
-            android:id="@+id/topBar"
-            android:layout_width="match_parent"
-            android:layout_marginBottom="20dp"
-            android:layout_height="40dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/backBtn"
+            <ProgressBar
+                android:id="@+id/postBar"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:indeterminateTint="@color/white"
+                android:elevation="5dp"
+                android:visibility="gone"
+                android:layout_centerVertical="true"
+                android:layout_alignStart="@+id/postBtn"
+                android:layout_alignEnd="@+id/postBtn"/>
+
+            <Button
+                android:id="@+id/postBtn"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:src="@drawable/baseline_cancel_24"/>
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <ProgressBar
-                    android:id="@+id/postBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:indeterminateTint="@color/white"
-                    android:elevation="5dp"
-                    android:visibility="gone"
-                    android:layout_centerVertical="true"
-                    android:layout_alignStart="@+id/postBtn"
-                    android:layout_alignEnd="@+id/postBtn"/>
-
-                <Button
-                    android:id="@+id/postBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:background="@drawable/bg_etbg"
-                    android:textColor="@color/white"
-                    android:text="Post"
-                    android:layout_alignParentEnd="true"
-                    android:textAllCaps="false" />
-
-            </RelativeLayout>
-
-
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button"
+                android:background="@drawable/bg_etbg"
+                android:textColor="@color/white"
+                android:text="Post"
+                android:layout_alignParentEnd="true"
+                android:textAllCaps="false" />
 
         </RelativeLayout>
 
-        <RelativeLayout
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_below="@id/topBar"
+        android:layout_above="@id/bottomLayout"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="40dp"
             android:layout_height="wrap_content">
 
             <EditText
@@ -77,38 +76,39 @@
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
+            <ImageView
+                android:id="@+id/imageThumb"
+                android:layout_width="wrap_content"
+                android:adjustViewBounds="true"
+                android:layout_below="@id/titleET"
+                tools:src="@drawable/illus_college"
+                android:layout_height="wrap_content"/>
+
             <EditText
                 android:id="@+id/bodyTextET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/titleET"
+                android:layout_below="@+id/imageThumb"
                 android:background="@drawable/bg_newpost_et_bg"
                 android:paddingVertical="20dp"
                 android:textColorHint="@color/my_grey_dark"
                 android:textColor="@color/black"
                 android:hint="body text" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
-        android:id="@+id/addImageLayout"
+        android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:paddingTop="10dp"
         android:orientation="horizontal">
 
-        <!--<Button
-            android:id="@+id/addImgBtn"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Add Image"
-            app:icon="@drawable/baseline_image_24"
-            app:iconTint="@color/black"
-            />-->
         <ImageView
+            android:id="@+id/addImgIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_image_24"/>

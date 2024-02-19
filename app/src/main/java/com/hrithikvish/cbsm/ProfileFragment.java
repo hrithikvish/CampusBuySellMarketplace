@@ -1,16 +1,20 @@
 package com.hrithikvish.cbsm;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +33,7 @@ public class ProfileFragment extends Fragment {
     SharedPrefManager sharedPrefManager;
     UserProfile userProfile;
     Gson gson;
+    ViewPagerPostsAndSavedAdapter viewPagerPostsAndSavedAdapter;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
@@ -39,6 +44,11 @@ public class ProfileFragment extends Fragment {
             binding.nameText.setText(user.getDisplayName());
         }
         binding.clgText.setText(userProfile.getClg());
+
+        binding.editProfileBtn.setOnClickListener(view-> Toast.makeText(requireContext(), "Yeah Mr White", Toast.LENGTH_SHORT).show());
+
+        binding.postsAndSavedViewPager.setAdapter(viewPagerPostsAndSavedAdapter);
+        binding.postsAndSavedTabLayout.setupWithViewPager(binding.postsAndSavedViewPager);
 
 
         //do not write code below this
@@ -56,5 +66,6 @@ public class ProfileFragment extends Fragment {
         gson = new Gson();
         String userProfileJson = sharedPrefManager.getObject(Constants.PROFILE_SHARED_PREF_KEY);
         userProfile = gson.fromJson(userProfileJson, UserProfile.class);
+            viewPagerPostsAndSavedAdapter = new ViewPagerPostsAndSavedAdapter(getActivity().getSupportFragmentManager());
     }
 }
