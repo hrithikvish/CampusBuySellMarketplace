@@ -2,7 +2,9 @@ package com.hrithikvish.cbsm.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -25,7 +27,10 @@ import com.google.firebase.storage.UploadTask;
 import com.hrithikvish.cbsm.HomeActivity;
 import com.hrithikvish.cbsm.databinding.ActivityNewPostBinding;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -115,7 +120,9 @@ public class FirebaseDatabaseHelper {
                     String postImageId = "Image " + (postImageIdLong + 1);
                     StorageReference postImagePath = storageReference.child("PostImages").child(postImageId+".jpg");
 
-                    UploadTask uploadTask = postImagePath.putFile(imageUri);
+                    byte[] compressedImage = compressImage(imageUri);
+
+                    UploadTask uploadTask = postImagePath.putBytes(compressedImage);
                     uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -180,8 +187,21 @@ public class FirebaseDatabaseHelper {
         });
     }
 
-    private void savePostIntoFbDb() {
+    private byte[] compressImage(Uri imageUri) {
+        byte[] bytes = new byte[0];
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
+            float aspectRatio = (float) bitmap.getWidth() / bitmap.getHeight();
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 1000, (int) (1000/aspectRatio), true);
+
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 25, byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            Log.d("COMPRESS IMAGE", e.getLocalizedMessage()+"");
+        }
+        return bytes;
     }
 
     private String getCurrentDateString() {
