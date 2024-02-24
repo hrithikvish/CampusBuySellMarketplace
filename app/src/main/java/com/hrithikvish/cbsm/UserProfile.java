@@ -1,7 +1,6 @@
 package com.hrithikvish.cbsm;
 
-import java.util.Objects;
-
+//for offline usage
 public class UserProfile {
     private String name;
     private String email;

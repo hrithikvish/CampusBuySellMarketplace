@@ -4,4 +4,12 @@
         <item name="android:statusBarColor"> @color/my_color_primary </item>
         <item name="android:textColor">@color/text_color_dark</item>
     </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
+        <item name="colorOnPrimary">@color/my_color_primary</item>
+        <item name="itemIconTint">@drawable/bottom_nav_tint_state</item>
+        <item name="itemTextColor">@drawable/bottom_nav_tint_state</item>
+
+<!--        <item name="colorOnSecondary">@color/my_grey_dark</item>-->
+    </style>
 </resources>

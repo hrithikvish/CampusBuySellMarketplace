@@ -39,6 +39,16 @@ public class SharedPrefManager {
         editor.apply();
     }
 
+    public void putInt(String key, int value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
+    public int getInt(String key) {
+        return sharedPreferences.getInt(key, -1);
+    }
+
     public String getString(String key) {
         return sharedPreferences.getString(key, null);
     }

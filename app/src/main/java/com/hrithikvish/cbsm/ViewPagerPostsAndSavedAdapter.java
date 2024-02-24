@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+//tab layout adapter
 public class ViewPagerPostsAndSavedAdapter extends FragmentStatePagerAdapter {
     public ViewPagerPostsAndSavedAdapter(@NonNull FragmentManager fm) {
         super(fm);

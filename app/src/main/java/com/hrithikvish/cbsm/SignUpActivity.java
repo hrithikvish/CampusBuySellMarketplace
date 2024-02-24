@@ -101,37 +101,6 @@ public class SignUpActivity extends AppCompatActivity implements ActivityFinishe
             activityResultLauncher.launch(signInIntent);
         });
 
-        setClgAdapter();
-    }
-
-    private void setClgAdapter() {
-        //decompressing Colleges_lIST GZip
-        List<String> colleges = new ArrayList<>();
-        try {
-            GZIPInputStream gzipInputStream = decompressCollegeGz();
-
-            byte[] data = IOUtils.toByteArray(gzipInputStream);
-
-            String allClgesString = new String(data, StandardCharsets.UTF_8);
-            String[] individualColleges = allClgesString.split("\n");
-            colleges.addAll(Arrays.asList(individualColleges));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        //College
-        ArrayAdapter<String> adapter = null;
-        try {
-            adapter = new ArrayAdapter<>(this, R.layout.college_dropdown_layout, colleges);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        binding.clgET.setAdapter(adapter);
-    }
-
-    private GZIPInputStream decompressCollegeGz() throws Exception{
-        InputStream inputStream = getResources().openRawResource(R.raw.colleges_list_txt);
-        return new GZIPInputStream(inputStream);
     }
 
     @Override
@@ -143,13 +112,13 @@ public class SignUpActivity extends AppCompatActivity implements ActivityFinishe
 
     private void signUpUsingEmailPass(String email, String pass, String conPass) {
         if (validateData(email, pass, conPass)) {
-            String clg = binding.clgET.getText().toString().trim();
+            //String clg = binding.clgET.getText().toString().trim();
             auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
-                        firebaseDatabaseHelper.addUserIntoFbDb(email, clg);
+                        Intent intent = new Intent(SignUpActivity.this, SelectCollegeActivity.class);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         changeRegBtnToLoading(false);
@@ -186,7 +155,6 @@ public class SignUpActivity extends AppCompatActivity implements ActivityFinishe
                                             startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
                                         } else {
                                             Intent intent = new Intent(SignUpActivity.this, SelectCollegeActivity.class);
-                                            intent.putExtra("googleEmail", email);
                                             startActivity(intent);
                                         }
                                     }
@@ -219,10 +187,10 @@ public class SignUpActivity extends AppCompatActivity implements ActivityFinishe
             binding.conPassET.setError("Password doesn't match");
             return false;
         }
-        if(binding.clgET.getText().toString().isEmpty()) {
+        /*if(binding.clgET.getText().toString().isEmpty()) {
             binding.clgET.setError("Select Your College");
             return false;
-        }
+        }*/
         return true;
     }
 

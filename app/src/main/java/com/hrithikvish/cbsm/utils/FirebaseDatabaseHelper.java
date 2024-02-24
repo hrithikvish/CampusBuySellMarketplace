@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,10 +26,10 @@ import com.google.firebase.storage.UploadTask;
 import com.hrithikvish.cbsm.HomeActivity;
 import com.hrithikvish.cbsm.databinding.ActivityNewPostBinding;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -42,7 +41,6 @@ public class FirebaseDatabaseHelper {
     ActivityFinisher activityFinisher;
     SharedPrefManager sharedPrefManager;
     StorageReference storageReference;
-
     ActivityNewPostBinding binding;
 
     //
@@ -76,11 +74,7 @@ public class FirebaseDatabaseHelper {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                /*if(!snapshot.child("Users").child(uid).exists()) {
 
-                } else {
-                    //if user exists
-                }*/
                 HashMap<String, Object> userData = new HashMap<>();
                 userData.put("email", email);
                 userData.put("clg", clg);
@@ -91,9 +85,9 @@ public class FirebaseDatabaseHelper {
                         if(task.isSuccessful()) {
                             sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
                             Toast.makeText(context, "User added in DB", Toast.LENGTH_SHORT).show();
-                            activityFinisher.finishActivity();
                             Intent intent = new Intent(context, HomeActivity.class);
                             context.startActivity(intent);
+                            activityFinisher.finishActivity();
                         } else {
                             Toast.makeText(context, "Oops! Something went wrong. Try Again.", Toast.LENGTH_SHORT).show();
                         }
@@ -107,8 +101,12 @@ public class FirebaseDatabaseHelper {
 
     public void addPostIntoFbDb(String postTitle, String postBody, Uri imageUri) {
         String uid = auth.getUid();
-
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        addPostWithImageIntoFbDb(postTitle, postBody, imageUri, uid);
+    }
+
+    private void addPostWithImageIntoFbDb(String postTitle, String postBody, Uri imageUri, String uid) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -151,9 +149,14 @@ public class FirebaseDatabaseHelper {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if(task.isSuccessful()) {
+                                                    // updating the ID GENERATORS
                                                     databaseReference.child("PostIdGenerator").child("currentId").setValue(postIdLong+1);
                                                     databaseReference.child("PostImageIdGenerator").child("currentPostImageId").setValue(postImageIdLong+1);
-                                                    Toast.makeText(context, "Posted", Toast.LENGTH_SHORT).show();
+
+                                                    //adding user posts in his profile
+                                                    addPostDataIntoUsersNode(snapshot, uid, postId);
+
+                                                    Toast.makeText(context, "Your post is live now.", Toast.LENGTH_SHORT).show();
                                                     activityFinisher.finishActivity();
                                                 } else {
                                                     Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -185,6 +188,23 @@ public class FirebaseDatabaseHelper {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+    }
+
+    private void addPostDataIntoUsersNode(@NonNull DataSnapshot snapshot, String uid, String postId) {
+        HashMap<String, Object> map = new HashMap<>();
+        ArrayList<String> userPostList;
+        try {
+            userPostList = (ArrayList<String>) snapshot.child("Users").child(uid).child("userPosts").getValue();
+            if(userPostList == null) {
+                userPostList = new ArrayList<>();
+                userPostList.add(postId);
+                map.put("userPosts", userPostList);
+            } else {
+                userPostList.add(postId);
+                map.put("userPosts", userPostList);
+            }
+            databaseReference.child("Users").child(uid).updateChildren(map);
+        } catch (Exception e) {Log.d("NULL U-P ARRAY", e.getLocalizedMessage()+"");}
     }
 
     private byte[] compressImage(Uri imageUri) {

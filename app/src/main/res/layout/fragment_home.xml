@@ -5,13 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:layout_centerInParent="true"
-        android:text="Home Fragment" />
+        android:elevation="10dp"
+        android:layout_centerInParent="true"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userPostsRecyclerView"
+        android:layout_width="match_parent"
+        tools:listitem="@layout/all_posts_item_card_view"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.common.util.IOUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hrithikvish.cbsm.databinding.ActivitySelectCollegeBinding;
+import com.hrithikvish.cbsm.utils.ActivityFinisher;
 import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
+import com.hrithikvish.cbsm.utils.SharedPrefManager;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-public class SelectCollegeActivity extends AppCompatActivity {
+public class SelectCollegeActivity extends AppCompatActivity implements ActivityFinisher {
     ActivitySelectCollegeBinding binding;
     FirebaseAuth auth;
     FirebaseDatabaseHelper firebaseDatabaseHelper;
@@ -31,17 +33,15 @@ public class SelectCollegeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SelectCollegeActivity.this, auth);
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SelectCollegeActivity.this, auth, this::finishActivity);
 
-        Intent intent = getIntent();
-        String googleEmail = intent.getStringExtra("googleEmail");
+        setClgAdapter();
 
         binding.continueBtn.setOnClickListener(view -> {
             changeRegBtnToLoading(true);
-            firebaseDatabaseHelper.addUserIntoFbDb(googleEmail, binding.clgET.getText().toString().trim());
+            firebaseDatabaseHelper.addUserIntoFbDb(auth.getCurrentUser().getEmail(), binding.clgET.getText().toString().trim());
         });
 
-        setClgAdapter();
     }
 
     private void setClgAdapter() {
@@ -88,5 +88,10 @@ public class SelectCollegeActivity extends AppCompatActivity {
             binding.progressBar.setVisibility(View.GONE);
             binding.continueBtn.setText("Register");
         }
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
     }
 }

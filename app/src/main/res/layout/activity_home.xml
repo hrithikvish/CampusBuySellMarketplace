@@ -14,46 +14,22 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="?attr/actionBarSize"/>
 
-    <TextView
-        android:id="@+id/userNameText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="User Name"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_above="@id/logoutBtn"/>
-
-    <Button
-        android:id="@+id/logoutBtn"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/bottomNavView"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:textColor="@color/white"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_etbg"
-        android:text="Dummy Logout"
-        android:textAllCaps="false" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@+id/bottomNavView"
         android:background="@color/my_grey"/>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentBottom="true"
         android:elevation="5dp"
-        style="@style/ThemeOverlay.App.BottomNavigationView"
         android:background="@color/white"
         app:labelVisibilityMode="labeled"
         android:paddingHorizontal="10dp"
-        app:menu="@menu/bottom_nav_items" />
+        app:menu="@menu/bottom_nav_items"
+        style="@style/ThemeOverlay.App.BottomNavigationView" />
 
 </RelativeLayout>

@@ -3,6 +3,7 @@ package com.hrithikvish.cbsm;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -42,16 +43,17 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
             finish();
         });
 
+        binding.addImgIcon.setOnClickListener(view-> {
+            selectImage();
+        });
+
         binding.postBtn.setOnClickListener(view->{
             String title = binding.titleET.getText().toString().trim();
             String body = binding.bodyTextET.getText().toString().trim();
             changePostBtnToProgBar(true);
             Toast.makeText(NewPostActivity.this, "Please Wait...", Toast.LENGTH_LONG).show();
             firebaseDatabaseHelper.addPostIntoFbDb(title, body, imageUri);
-        });
-
-        binding.addImgIcon.setOnClickListener(view-> {
-            selectImage();
+            Log.d("IMAGE URI LOG", imageUri + "");
         });
 
     }

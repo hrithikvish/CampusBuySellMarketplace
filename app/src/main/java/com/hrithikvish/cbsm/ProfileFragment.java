@@ -1,5 +1,8 @@
 package com.hrithikvish.cbsm;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,6 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,6 +40,7 @@ public class ProfileFragment extends Fragment {
     UserProfile userProfile;
     Gson gson;
     ViewPagerPostsAndSavedAdapter viewPagerPostsAndSavedAdapter;
+    GoogleSignInClient googleSignInClient;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
@@ -50,6 +57,30 @@ public class ProfileFragment extends Fragment {
         binding.postsAndSavedViewPager.setAdapter(viewPagerPostsAndSavedAdapter);
         binding.postsAndSavedTabLayout.setupWithViewPager(binding.postsAndSavedViewPager);
 
+        binding.logoutBtn.setOnClickListener(view-> {
+            //auth.signOut();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Are you sure, you want to logout?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
+                    googleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+                    googleSignInClient.signOut();
+
+                    sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, false);
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    getActivity().finish();
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {}
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
 
         //do not write code below this
         return binding.getRoot();

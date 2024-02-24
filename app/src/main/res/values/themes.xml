@@ -8,6 +8,8 @@
 
     <style name="ThemeOverlay.App.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
         <item name="colorOnPrimary">@color/my_color_primary</item>
+        <item name="itemIconTint">@drawable/bottom_nav_tint_state</item>
+        <item name="itemTextColor">@drawable/bottom_nav_tint_state</item>
     </style>
 
     <style name="Theme.CampusBuySellMarketplace" parent="Base.Theme.CampusBuySellMarketplace" />
