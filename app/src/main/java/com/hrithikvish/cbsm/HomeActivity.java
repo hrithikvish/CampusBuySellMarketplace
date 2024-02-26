@@ -48,12 +48,11 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                if(id == R.id.navHome) {
+                if (id == R.id.navHome) {
                     loadFragment(new HomeFragment());
                 } else if (id == R.id.navExplore) {
                     loadFragment(new ExploreFragment());
                 } else if (id == R.id.navPost) {
-                    //loadFragment(new NewPostFragment());
                     Intent intent = new Intent(HomeActivity.this, NewPostActivity.class);
                     saveCurrentFragment();
                     startActivity(intent);
@@ -116,9 +115,14 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         //getting last Active Fragment
         int lastSelectedItem = sharedPrefManager.getInt(Constants.LAST_SELECTED_ITEM);
         binding.bottomNavView.setSelectedItemId(lastSelectedItem);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navHome);
     }
 }

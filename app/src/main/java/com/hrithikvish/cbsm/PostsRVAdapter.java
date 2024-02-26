@@ -20,7 +20,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,24 +56,39 @@ public class PostsRVAdapter extends RecyclerView.Adapter<PostsRVAdapter.postsRVV
             FirebaseAuth auth = FirebaseAuth.getInstance();
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-            HashMap<String, Object> map = new HashMap<>();
+            HashMap<String, Object> savedPostsMap = new HashMap<>();
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     ArrayList<String> savedPostList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
-                    if(savedPostList == null) {
+
+                    boolean removedTemp = false;
+
+                    if(savedPostList != null) {
+                        if(!savedPostList.contains(post.getPostId())) {
+                            savedPostList.add(post.getPostId());
+                            savedPostsMap.put("savedPosts", savedPostList);
+                        } else if(savedPostList.contains(post.getPostId())) {
+                            savedPostList.remove(post.getPostId());
+                            removedTemp = true;
+                            savedPostsMap.put("savedPosts", savedPostList);
+                        }
+                    } else {
                         savedPostList = new ArrayList<>();
                         savedPostList.add(post.getPostId());
-                        map.put("savedPosts", savedPostList);
-                    } else {
-                        savedPostList.add(post.getPostId());
-                        map.put("savedPosts", savedPostList);
+                        savedPostsMap.put("savedPosts", savedPostList);
                     }
-                    databaseReference.child("Users").child(auth.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    boolean removed = removedTemp;
+                    databaseReference.child("Users").child(auth.getUid()).updateChildren(savedPostsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()) {
-                                Toast.makeText(context, "Post Saved", Toast.LENGTH_SHORT).show();
+                                if(removed) {
+                                    Toast.makeText(context, "Post removed from Saved", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, "Post Saved", Toast.LENGTH_SHORT).show();
+                                }
+                                //holder.savePost.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_bookmark_24));
                             } else {
                                 Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                             }
@@ -87,6 +101,14 @@ public class PostsRVAdapter extends RecyclerView.Adapter<PostsRVAdapter.postsRVV
             });
 
         });
+
+        holder.itemView.setOnClickListener(view-> {
+            /*PostModalClassForRV selectedPost = postList.get(position);
+            Intent intent = new Intent(context, SelectedPost.class);
+            intent.putExtra("selectedPost", selectedPost);
+            context.startActivity(intent);*/
+        });
+
     }
 
     @Override
@@ -94,7 +116,7 @@ public class PostsRVAdapter extends RecyclerView.Adapter<PostsRVAdapter.postsRVV
         return postList.size();
     }
 
-    public static class postsRVViewHolder extends RecyclerView.ViewHolder {
+    public class postsRVViewHolder extends RecyclerView.ViewHolder{
         TextView postTitle, clg, datePosted;
         ImageView postImage, savePost;
         public postsRVViewHolder(@NonNull View itemView) {
@@ -105,7 +127,6 @@ public class PostsRVAdapter extends RecyclerView.Adapter<PostsRVAdapter.postsRVV
             datePosted = itemView.findViewById(R.id.postDatePostedTextView);
             postImage = itemView.findViewById(R.id.postImageView);
             savePost = itemView.findViewById(R.id.savePostBtn);
-
         }
     }
 }

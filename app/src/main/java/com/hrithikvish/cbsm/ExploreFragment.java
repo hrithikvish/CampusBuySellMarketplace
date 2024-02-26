@@ -18,7 +18,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.FragmentExploreBinding;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class ExploreFragment extends Fragment {
 
@@ -39,7 +42,7 @@ public class ExploreFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     try {
                         ArrayList<String> list = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("dummySavedPosted").child("saved").getValue();
-                        Log.d("ARRAY", list.toString()+"");
+                        Log.d("SET DS", list.toString()+"");
                     } catch (Exception e) {
                         Log.d("ERROR", e.getLocalizedMessage());
                     }
@@ -48,6 +51,38 @@ public class ExploreFragment extends Fragment {
                 public void onCancelled(@NonNull DatabaseError error) {}
             });
         });
+
+        binding.button3.setOnClickListener(view-> {
+            HashMap<String, Object> listMap = new HashMap<>();
+            ArrayList<String> dummyList = new ArrayList<>();
+            dummyList.add("Post 2");
+            dummyList.add("Post 5");
+            dummyList.add("Post 42");
+            dummyList.add("Post 35");
+            listMap.put("dummyList", dummyList);
+
+            databaseReference.child("Dummy LIST").updateChildren(listMap);
+        });
+
+        binding.button2.setOnClickListener(view-> {
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    try {
+                        ArrayList<String> list = (ArrayList<String>) snapshot.child("Dummy LIST").child("dummyList").getValue();
+                        Log.d("LIST DS", list.toString() + "");
+                        Log.d("LIST CHECK DATA", String.valueOf(list.contains("Post 41")));
+                    } catch (Exception e) {
+                        Log.d("ERROR", e.getLocalizedMessage());
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) { }
+            });
+        });
+
+
+
 
         //
         return binding.getRoot();
