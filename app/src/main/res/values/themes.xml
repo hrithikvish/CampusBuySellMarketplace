@@ -12,5 +12,9 @@
         <item name="itemTextColor">@drawable/bottom_nav_tint_state</item>
     </style>
 
+    <style name="Widget.MyApp.Toolbar.Solid" parent="Widget.AppCompat.ActionBar">
+        <item name="titleTextColor">@color/white</item>
+    </style>
+
     <style name="Theme.CampusBuySellMarketplace" parent="Base.Theme.CampusBuySellMarketplace" />
 </resources>

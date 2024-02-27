@@ -3,6 +3,8 @@ package com.hrithikvish.cbsm;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -20,6 +22,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,6 +84,41 @@ public class ProfileFragment extends Fragment {
             AlertDialog dialog = builder.create();
             dialog.show();
         });
+
+        binding.appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isCollapsed = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    // Collapsed
+                    if (!isCollapsed) {
+                        binding.mineToolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.my_color_primary));
+                        if(user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
+                            String string = user.getEmail();
+                            String newString = string.substring(0, string.length() - 10);
+                            binding.mineToolbar.setTitle(newString);
+                        } else {
+                            binding.mineToolbar.setTitle(user.getDisplayName());
+                        }
+                        isCollapsed = true;
+                    }
+                } else {
+                    // Not collapsed
+                    if (isCollapsed) {
+                        binding.mineToolbar.setBackgroundColor(getActivity().getResources().getColor(android.R.color.transparent));
+                        binding.collapsingToolbar.setTitle("");
+                        isCollapsed = false;
+                    }
+                }
+            }
+        });
+
+
 
         //do not write code below this
         return binding.getRoot();

@@ -64,32 +64,6 @@ public class HomeFragment extends Fragment {
         binding.userPostsRecyclerView.setAdapter(adapter);
 
         //search bar
-        binding.searchBar.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                binding.searchBarLayout.setStartIconDrawable(R.drawable.baseline_arrow_back_24);
-                binding.searchBarLayout.setStartIconOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(binding.searchBar.getWindowToken(), 0);
-                        binding.searchBar.clearFocus();
-                        binding.searchBarLayout.setStartIconDrawable(R.drawable.baseline_search_24);
-                    }
-                });
-            }
-        });
-
-        binding.searchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // TODOODODODOD
-            }
-        });
 
         // forbidden
         return binding.getRoot();
