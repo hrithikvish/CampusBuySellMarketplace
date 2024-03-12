@@ -13,13 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
+            app:collapsedTitleTextColor="@color/white"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
@@ -31,8 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="20dp"
+                android:paddingHorizontal="10dp"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-                app:layout_collapseMode="parallax"
                 android:paddingBottom="10dp"
                 android:orientation="vertical">
 
@@ -122,13 +123,15 @@
 
             </LinearLayout>
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/mineToolbar"
                 android:layout_width="match_parent"
+                android:layout_height="71dp"
                 android:layout_gravity="bottom"
-                tools:title="NAME"
                 android:background="@android:color/transparent"
-                android:layout_height="?attr/actionBarSize"/>
+                android:visibility="invisible"
+                app:titleTextColor="@color/white"
+                tools:title="NAME" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -143,8 +146,7 @@
         <com.google.android.material.tabs.TabLayout
         android:id="@+id/postsAndSavedTabLayout"
         android:layout_width="match_parent"
-        android:layout_below="@+id/btns"
-        android:backgroundTint="@color/white"
+            android:backgroundTint="@color/white"
         android:layout_height="wrap_content">
 
         <com.google.android.material.tabs.TabItem
@@ -163,14 +165,11 @@
             android:id="@+id/bottomBorder"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/postsAndSavedTabLayout"
             android:background="@color/my_grey"/>
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/postsAndSavedViewPager"
             android:layout_width="match_parent"
-            android:paddingTop="10dp"
-            android:layout_below="@id/bottomBorder"
             android:layout_height="match_parent"/>
 
     </LinearLayout>

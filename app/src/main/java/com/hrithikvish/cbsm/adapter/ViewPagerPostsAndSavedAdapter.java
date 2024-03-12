@@ -1,4 +1,4 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+
+import com.hrithikvish.cbsm.ProfilePostsFragment;
+import com.hrithikvish.cbsm.ProfileSavedFragment;
 
 //tab layout adapter
 public class ViewPagerPostsAndSavedAdapter extends FragmentStatePagerAdapter {

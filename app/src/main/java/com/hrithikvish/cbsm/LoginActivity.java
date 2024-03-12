@@ -135,6 +135,9 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if(!snapshot.child("Users").child(uid).child("clg").exists()) {
                                             Toast.makeText(LoginActivity.this, "User Not Found, Sign Up", Toast.LENGTH_LONG).show();
+                                            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
+                                            googleSignInClient = GoogleSignIn.getClient(LoginActivity.this, gso);
+                                            googleSignInClient.signOut();
                                             changeGoogleRegBtnToLoading(false);
                                         } else {
                                             sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);

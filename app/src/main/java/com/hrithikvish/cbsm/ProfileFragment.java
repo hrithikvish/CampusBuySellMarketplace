@@ -3,12 +3,7 @@ package com.hrithikvish.cbsm;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,21 +12,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.hrithikvish.cbsm.databinding.FragmentProfileBinding;
+import com.hrithikvish.cbsm.model.UserProfile;
 import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.SharedPrefManager;
+
+import com.hrithikvish.cbsm.adapter.ViewPagerPostsAndSavedAdapter;
 
 public class ProfileFragment extends Fragment {
 
@@ -97,6 +93,7 @@ public class ProfileFragment extends Fragment {
                 if (scrollRange + verticalOffset == 0) {
                     // Collapsed
                     if (!isCollapsed) {
+                        binding.mineToolbar.setVisibility(View.VISIBLE);
                         binding.mineToolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.my_color_primary));
                         if(user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
                             String string = user.getEmail();
@@ -110,6 +107,7 @@ public class ProfileFragment extends Fragment {
                 } else {
                     // Not collapsed
                     if (isCollapsed) {
+                        binding.mineToolbar.setVisibility(View.INVISIBLE);
                         binding.mineToolbar.setBackgroundColor(getActivity().getResources().getColor(android.R.color.transparent));
                         binding.collapsingToolbar.setTitle("");
                         isCollapsed = false;

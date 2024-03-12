@@ -1,4 +1,4 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,15 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.hrithikvish.cbsm.model.PostModelClassForRV;
+import com.hrithikvish.cbsm.R;
 
 import java.util.ArrayList;
 
 public class UserPostsRVAdapter extends RecyclerView.Adapter<UserPostsRVAdapter.userPostsRVViewHolder> {
 
     Context context;
-    ArrayList<PostModalClassForRV> list;
+    ArrayList<PostModelClassForRV> list;
 
-    public UserPostsRVAdapter(Context context, ArrayList<PostModalClassForRV> list) {
+    public UserPostsRVAdapter(Context context, ArrayList<PostModelClassForRV> list) {
         this.context = context;
         this.list = list;
     }
@@ -33,7 +35,7 @@ public class UserPostsRVAdapter extends RecyclerView.Adapter<UserPostsRVAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull userPostsRVViewHolder holder, int position) {
-        PostModalClassForRV post = list.get(position);
+        PostModelClassForRV post = list.get(position);
         holder.datePosted.setText(post.getDatePosted());
         Glide.with(context)
                 .load(post.getPostImageUri())

@@ -5,14 +5,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,9 +18,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.FragmentProfilePostsBinding;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import com.hrithikvish.cbsm.adapter.UserPostsRVAdapter;
+import com.hrithikvish.cbsm.model.PostModelClassForRV;
 
 public class ProfilePostsFragment extends Fragment {
 
@@ -32,7 +31,7 @@ public class ProfilePostsFragment extends Fragment {
     DatabaseReference databaseReference;
     FirebaseAuth auth;
     UserPostsRVAdapter adapter;
-    ArrayList<PostModalClassForRV> list;
+    ArrayList<PostModelClassForRV> list;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,7 +55,7 @@ public class ProfilePostsFragment extends Fragment {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 ArrayList<String> userPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
                 for (String userPosts : userPostsList) {
-                    PostModalClassForRV post = snapshot.child("Posts").child(userPosts).getValue(PostModalClassForRV.class);
+                    PostModelClassForRV post = snapshot.child("Posts").child(userPosts).getValue(PostModelClassForRV.class);
                     post.setPostId(snapshot.child("Posts").child(userPosts).getKey());
                     list.add(post);
                 }

@@ -1,6 +1,6 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm.model;
 
-public class PostModalClassForRV {
+public class PostModelClassForRV {
     String postId, title, body, user, datePosted, timePosted, postImageUri;
 
     public String getPostId() {
@@ -13,6 +13,14 @@ public class PostModalClassForRV {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPostImageUri(String postImageUri) {
+        this.postImageUri = postImageUri;
     }
 
     public String getBody() {

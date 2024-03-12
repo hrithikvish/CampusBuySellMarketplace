@@ -1,4 +1,4 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm.model;
 
 //for offline usage
 public class UserProfile {

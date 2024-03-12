@@ -18,24 +18,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/my_color_primary"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/my_color_primary"
-                app:layout_scrollFlags="scroll|enterAlways">
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                app:defaultMarginsEnabled="false"
+                android:layout_margin="8dp"
+                android:hint="Search" />
 
-                <com.google.android.material.search.SearchBar
-                    android:id="@+id/search_bar"
-                    android:layout_width="match_parent"
-                    android:background="@color/my_grey"
-                    android:layout_height="wrap_content"
-                    app:defaultMarginsEnabled="false"
-                    android:layout_margin="8dp"
-                    android:hint="Search" />
-
-
-            </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

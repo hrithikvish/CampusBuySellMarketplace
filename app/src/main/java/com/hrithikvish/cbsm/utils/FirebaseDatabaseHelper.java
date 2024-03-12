@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,14 +70,36 @@ public class FirebaseDatabaseHelper {
 
     public void addUserIntoFbDb(String email, String clg) {
         String uid = auth.getCurrentUser().getUid();
+        FirebaseUser user = auth.getCurrentUser();
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+/////////////////////////////////////
+                HashMap<String, Object> collegesListMap = new HashMap<>();
+                HashMap<String, Object> collegeUsersMap = new HashMap<>();
+
+                ArrayList<String> collegesList = (ArrayList<String>) snapshot.child("Colleges").child("collegesList").getValue();
+
+                if(collegesList == null || !collegesList.contains(clg)) {
+                    updateCollegesList(clg, collegesList, uid);
+                }
+
+                if(collegesList != null && collegesList.contains(clg)) {
+                    updateUserList(clg, uid);
+                }
+
+                ///////////////////
+
                 HashMap<String, Object> userData = new HashMap<>();
                 userData.put("email", email);
+                if(user.getDisplayName() == null) {
+                    userData.put("name", auth.getCurrentUser().getEmail());
+                } else {
+                    userData.put("name", auth.getCurrentUser().getDisplayName());
+                }
                 userData.put("clg", clg);
 
                 databaseReference.child("Users").child(uid).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -99,6 +122,36 @@ public class FirebaseDatabaseHelper {
         });
     }
 
+
+    // if(collegesList == null || !collegesList.contains(clg))
+    private void updateCollegesList(String clg, ArrayList<String> collegesList, String uid) {
+        HashMap<String, Object> collegesListMap = new HashMap<>();
+        ArrayList<String> tempCollegesList = (collegesList == null) ? new ArrayList<>() : new ArrayList<>(collegesList);
+        tempCollegesList.add(clg);
+        collegesListMap.put("collegesList", tempCollegesList);
+        databaseReference.child("Colleges").updateChildren(collegesListMap).addOnCompleteListener(task -> updateUserList(clg, uid));
+    }
+
+    private void updateUserList(String clg, String uid) {
+        HashMap<String, Object> collegeUsersMap = new HashMap<>();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<String> newClgList = (ArrayList<String>) snapshot.child("Colleges").child("collegesList").getValue();
+                ArrayList<String> userList = (ArrayList<String>) snapshot.child("Colleges").child("collegeUsers").child(String.valueOf(newClgList.indexOf(clg))).getValue();
+                if (userList == null) {
+                    userList = new ArrayList<>();
+                }
+                userList.add(uid);
+                collegeUsersMap.put(String.valueOf(newClgList.indexOf(clg)), userList);
+                databaseReference.child("Colleges").child("collegeUsers").updateChildren(collegeUsersMap);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
     public void addPostIntoFbDb(String postTitle, String postBody, Uri imageUri) {
         String uid = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -114,7 +167,7 @@ public class FirebaseDatabaseHelper {
                     long postIdLong = (long) snapshot.child("PostIdGenerator").child("currentId").getValue();
                     long postImageIdLong = (long) snapshot.child("PostImageIdGenerator").child("currentPostImageId").getValue();
 
-                    String postId = "Post " + (postIdLong+ 1);
+                    String postId = "Post " + (postIdLong + 1);
                     String postImageId = "Image " + (postImageIdLong + 1);
                     StorageReference postImagePath = storageReference.child("PostImages").child(postImageId+".jpg");
 
@@ -155,6 +208,7 @@ public class FirebaseDatabaseHelper {
 
                                                     //adding user posts in his profile
                                                     addPostDataIntoUsersNode(snapshot, uid, postId);
+                                                    addPostInCollegesPostNode(snapshot, uid, postId);
 
                                                     Toast.makeText(context, "Your post is live now.", Toast.LENGTH_SHORT).show();
                                                     activityFinisher.finishActivity();
@@ -205,6 +259,30 @@ public class FirebaseDatabaseHelper {
             }
             databaseReference.child("Users").child(uid).updateChildren(map);
         } catch (Exception e) {Log.d("NULL U-P ARRAY", e.getLocalizedMessage()+"");}
+    }
+
+    private void addPostInCollegesPostNode(DataSnapshot snapshot, String uid, String postId) {
+        ArrayList<String> clgList = (ArrayList<String>) snapshot.child("Colleges").child("collegesList").getValue();
+
+        String clg = (String) snapshot.child("Users").child(uid).child("clg").getValue();
+
+        ArrayList<String> collegePostsList = (ArrayList<String>) snapshot.child("Colleges").child("collegesPost").child(String.valueOf(clgList.indexOf(clg))).getValue();
+        Log.d("INDEX", String.valueOf(clgList.indexOf(clg)));
+        String clgIndexOrID = String.valueOf(clgList.indexOf(clg));
+
+        HashMap<String, Object> collegesPostsMap = new HashMap<>();
+
+        if(collegePostsList == null) {
+            collegePostsList = new ArrayList<>();
+            collegePostsList.add(postId);
+            collegesPostsMap.put(clgIndexOrID, collegePostsList);
+        } else {
+            collegePostsList.add(postId);
+            collegesPostsMap.put(clgIndexOrID, collegePostsList);
+        }
+
+        databaseReference.child("Colleges").child("collegesPost").updateChildren(collegesPostsMap);
+
     }
 
     private byte[] compressImage(Uri imageUri) {

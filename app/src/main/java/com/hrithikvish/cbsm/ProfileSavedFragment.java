@@ -21,13 +21,16 @@ import com.hrithikvish.cbsm.databinding.FragmentProfileSavedBinding;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.hrithikvish.cbsm.adapter.UserPostsRVAdapter;
+import com.hrithikvish.cbsm.model.PostModelClassForRV;
+
 public class ProfileSavedFragment extends Fragment {
     FragmentProfileSavedBinding binding;
 
     DatabaseReference databaseReference;
     FirebaseAuth auth;
     UserPostsRVAdapter adapter;
-    ArrayList<PostModalClassForRV> list;
+    ArrayList<PostModelClassForRV> list;
 
 
     @Override
@@ -54,7 +57,7 @@ public class ProfileSavedFragment extends Fragment {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 ArrayList<String> savedPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
                 for (String savedPost : savedPostsList) {
-                    PostModalClassForRV post = snapshot.child("Posts").child(savedPost).getValue(PostModalClassForRV.class);
+                    PostModelClassForRV post = snapshot.child("Posts").child(savedPost).getValue(PostModelClassForRV.class);
                     post.setPostId(snapshot.child("Posts").child(savedPost).getKey());
                     list.add(post);
                 }

@@ -1,95 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="1dp"
+    android:layout_marginBottom="5dp"
+    app:cardCornerRadius="0dp"
     android:backgroundTint="@color/white">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/postImageView"
-                android:layout_width="match_parent"
+                android:layout_width="160dp"
                 android:layout_height="fill_parent"
                 android:scaleType="center"
                 android:adjustViewBounds="true"
                 android:src="@drawable/illus_college"/>
 
-        </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/postTitleAndSaveBtnLayout"
-            android:layout_width="match_parent"
-            android:background="@color/my_grey"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="5dp"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/postTitleAndSaveBtnLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:background="@color/my_grey"
+                android:padding="10dp"
+                android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:id="@+id/nonSaveBtnLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/postTitleTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="Post Title"
-                        android:textStyle="bold"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"/>
-
-                    <TextView
-                        android:id="@+id/postClgTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ghanshyamdas Saraf College of Commerce and Arts"
-                        android:textSize="15sp"
-                        android:textColor="@color/black"
-                        android:maxLines="1"
-                        android:ellipsize="end"/>
-                    <!--app:drawableLeftCompat="@drawable/baseline_location_on_24"-->
-
-                    <TextView
-                        android:id="@+id/postDatePostedTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="14 Feb 2024"
-                        android:textSize="15sp"
-                        android:textColor="@color/black"
-                        android:maxLines="1"
-                        android:ellipsize="end"/>
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/savePostBtn"
+                <TextView
+                    android:id="@+id/clgName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/baseline_bookmark_border_24"/>
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="11sp"
+                    tools:text="Ghanshyamdas Saraf College of Arts &amp; Commerce" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/postTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/clgName"
+                    android:textStyle="bold"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textSize="16sp"
+                    tools:text="Apple 2022 MacBook Air Laptop with M2 chip: 34.46 cm (13.6-inch) Liquid Retina Display, 8GB RAM, 256GB SSD Storage, Backlit Keyboard, 1080p FaceTime HD Camera" />
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/postBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/postTitle"
+                    android:maxLines="2"
+                    android:textSize="11sp"
+                    android:ellipsize="end"
+                    android:text="No Description"
+                    tools:text="is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book." />
+
+                <TextView
+                    android:id="@+id/datePosted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/postBody"
+                    android:textSize="11sp"
+                    tools:text="12 Feb 2024" />
+
+                <TextView
+                    android:id="@+id/postPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:text="300 Rs" />
+
+                <TextView
+                    android:id="@+id/threeDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:textStyle="bold"
+                    android:textSize="25sp"
+                    android:paddingStart="20dp"
+                    android:text="&#8942;" />
+
+            </RelativeLayout>
 
     </LinearLayout>
 
