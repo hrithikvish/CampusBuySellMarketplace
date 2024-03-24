@@ -2,6 +2,7 @@ package com.hrithikvish.cbsm;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         sharedPrefManager = new SharedPrefManager(HomeActivity.this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navHome);
 
         binding.bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -118,6 +120,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navHome);
+        saveCurrentFragment();
     }
 }

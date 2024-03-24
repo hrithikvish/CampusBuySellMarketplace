@@ -1,15 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.CampusBuySellMarketplace" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.CampusBuySellMarketplace" parent="Theme.Material3.Light.NoActionBar">
 
         <item name="colorPrimary">@color/my_color_primary</item>
         <item name="android:statusBarColor"> @color/my_color_primary </item>
         <item name="android:textColor">@color/text_color_light</item>
     </style>
 
-    <style name="ThemeOverlay.App.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
+    <style name="CustomBottomNav" parent="@style/Widget.Material3.BottomNavigationView">
         <item name="colorOnPrimary">@color/my_color_primary</item>
-        <item name="itemIconTint">@drawable/bottom_nav_tint_state</item>
-        <item name="itemTextColor">@drawable/bottom_nav_tint_state</item>
+        <item name="itemIconTint">@drawable/bottom_nav_icon_tint_state</item>
+        <item name="itemTextColor">@drawable/bottom_nav_text_tint_state</item>
+    </style>
+
+    <style name="CustomActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/my_color_primary</item>
     </style>
 
     <style name="Widget.MyApp.Toolbar.Solid" parent="Widget.AppCompat.ActionBar">

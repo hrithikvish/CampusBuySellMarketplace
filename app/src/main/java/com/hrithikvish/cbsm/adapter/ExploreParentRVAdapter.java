@@ -21,12 +21,10 @@ public class ExploreParentRVAdapter extends RecyclerView.Adapter<ExploreParentRV
 
     Context context;
     ArrayList<ParentItemModelClassForRV> collegesList;
-    ArrayList<PostModelClassForRV> postList;
 
-    public ExploreParentRVAdapter(Context context, ArrayList<ParentItemModelClassForRV> collegesList, ArrayList<PostModelClassForRV> postList) {
+    public ExploreParentRVAdapter(Context context, ArrayList<ParentItemModelClassForRV> collegesList) {
         this.context = context;
         this.collegesList = collegesList;
-        this.postList = postList;
     }
 
     @NonNull
@@ -42,7 +40,7 @@ public class ExploreParentRVAdapter extends RecyclerView.Adapter<ExploreParentRV
 
         holder.collegeName.setText(parentModelClass.getCollegeName());
 
-        ExploreChildRVAdapter childRVAdapter = new ExploreChildRVAdapter(context, postList);
+        ExploreChildRVAdapter childRVAdapter = new ExploreChildRVAdapter(context, parentModelClass.getPostList());
         holder.childRV.setHasFixedSize(true);
         holder.childRV.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.childRV.setAdapter(childRVAdapter);

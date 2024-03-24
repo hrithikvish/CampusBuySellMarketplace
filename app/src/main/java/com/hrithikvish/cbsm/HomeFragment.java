@@ -1,28 +1,26 @@
 package com.hrithikvish.cbsm;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.hrithikvish.cbsm.adapter.AllPostsRVAdapter;
 import com.hrithikvish.cbsm.databinding.FragmentHomeBinding;
+import com.hrithikvish.cbsm.model.PostModelClassForRV;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import com.hrithikvish.cbsm.adapter.AllPostsRVAdapter;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
 
 public class HomeFragment extends Fragment {
 
@@ -39,6 +37,13 @@ public class HomeFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         list = new ArrayList<>();
 
+        initRV();
+
+        // forbidden
+        return binding.getRoot();
+    }
+
+    private void initRV() {
         binding.userPostsRecyclerView.setHasFixedSize(true);
         binding.userPostsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -58,16 +63,10 @@ public class HomeFragment extends Fragment {
         });
         adapter = new AllPostsRVAdapter(getContext(), list);
         binding.userPostsRecyclerView.setAdapter(adapter);
-
-        //search bar
-
-        // forbidden
-        return binding.getRoot();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 }

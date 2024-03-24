@@ -1,6 +1,8 @@
 package com.hrithikvish.cbsm.model;
 
-public class PostModelClassForRV {
+import java.io.Serializable;
+
+public class PostModelClassForRV implements Serializable {
     String postId, title, body, user, datePosted, timePosted, postImageUri;
 
     public String getPostId() {

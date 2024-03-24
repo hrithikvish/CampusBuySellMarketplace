@@ -1,6 +1,9 @@
 package com.hrithikvish.cbsm.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.hrithikvish.cbsm.SelectedPostActivity;
 import com.hrithikvish.cbsm.model.PostModelClassForRV;
 import com.hrithikvish.cbsm.R;
 
@@ -94,10 +98,10 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
         });
 
         holder.itemView.setOnClickListener(view-> {
-            /*PostModalClassForRV selectedPost = postList.get(position);
-            Intent intent = new Intent(context, SelectedPost.class);
+            PostModelClassForRV selectedPost = postList.get(position);
+            Intent intent = new Intent(context, SelectedPostActivity.class);
             intent.putExtra("selectedPost", selectedPost);
-            context.startActivity(intent);*/
+            context.startActivity(intent);
         });
 
     }

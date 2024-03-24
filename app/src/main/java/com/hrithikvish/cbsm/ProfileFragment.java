@@ -133,6 +133,6 @@ public class ProfileFragment extends Fragment {
         gson = new Gson();
         String userProfileJson = sharedPrefManager.getObject(Constants.PROFILE_SHARED_PREF_KEY);
         userProfile = gson.fromJson(userProfileJson, UserProfile.class);
-            viewPagerPostsAndSavedAdapter = new ViewPagerPostsAndSavedAdapter(getActivity().getSupportFragmentManager());
+        viewPagerPostsAndSavedAdapter = new ViewPagerPostsAndSavedAdapter(getActivity().getSupportFragmentManager());
     }
 }

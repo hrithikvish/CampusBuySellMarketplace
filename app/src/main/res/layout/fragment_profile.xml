@@ -146,7 +146,7 @@
         <com.google.android.material.tabs.TabLayout
         android:id="@+id/postsAndSavedTabLayout"
         android:layout_width="match_parent"
-            android:backgroundTint="@color/white"
+        android:backgroundTint="@color/white"
         android:layout_height="wrap_content">
 
         <com.google.android.material.tabs.TabItem

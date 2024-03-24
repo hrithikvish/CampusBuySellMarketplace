@@ -23,6 +23,7 @@ import com.hrithikvish.cbsm.model.ParentItemModelClassForRV;
 import com.hrithikvish.cbsm.model.PostModelClassForRV;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ExploreFragment extends Fragment {
 
@@ -31,7 +32,6 @@ public class ExploreFragment extends Fragment {
     FirebaseAuth auth;
 
     ArrayList<ParentItemModelClassForRV> collegesListMain;
-    ArrayList<PostModelClassForRV> postListMain;
     ExploreParentRVAdapter parentRVAdapter;
 
     @Override
@@ -43,7 +43,6 @@ public class ExploreFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
 
         collegesListMain = new ArrayList<>();
-        postListMain = new ArrayList<>();
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -61,14 +60,16 @@ public class ExploreFragment extends Fragment {
                         continue;
                     }
 
+                    ArrayList<PostModelClassForRV> postList = new ArrayList<>();
                     for(String post : tempPostList) {
                         PostModelClassForRV postClass = snapshot.child("Posts").child(post).getValue(PostModelClassForRV.class);
-                        postListMain.add(postClass);
+                        postList.add(postClass);
                     }
-                    collegesListMain.add(new ParentItemModelClassForRV(collegesList.get(i)));
+                    Collections.reverse(postList);
+                    collegesListMain.add(new ParentItemModelClassForRV(collegesList.get(i), postList));
 
                 }
-                parentRVAdapter = new ExploreParentRVAdapter(getContext(), collegesListMain, postListMain);
+                parentRVAdapter = new ExploreParentRVAdapter(getContext(), collegesListMain);
                 binding.parentRV.setHasFixedSize(true);
                 binding.parentRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 binding.parentRV.setAdapter(parentRVAdapter);

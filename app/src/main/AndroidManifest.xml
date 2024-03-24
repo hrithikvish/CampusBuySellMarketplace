@@ -15,6 +15,9 @@
         android:theme="@style/Theme.CampusBuySellMarketplace"
         tools:targetApi="31">
         <activity
+            android:name=".SelectedPostActivity"
+            android:exported="false" />
+        <activity
             android:name=".SelectCollegeActivity"
             android:exported="false" />
 
