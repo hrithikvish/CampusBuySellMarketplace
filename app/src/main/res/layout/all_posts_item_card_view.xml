@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="5dp"
-    app:cardCornerRadius="0dp"
+    app:cardCornerRadius="10dp"
+    android:layout_margin="5dp"
     android:backgroundTint="@color/white">
 
     <LinearLayout
@@ -25,7 +26,7 @@
             <RelativeLayout
                 android:id="@+id/postTitleAndSaveBtnLayout"
                 android:layout_width="match_parent"
-                android:background="@color/my_grey"
+                android:background="@color/white"
                 android:padding="10dp"
                 android:layout_height="match_parent">
 

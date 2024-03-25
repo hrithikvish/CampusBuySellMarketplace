@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/my_grey"
     tools:context=".HomeFragment">
 
     <ProgressBar
@@ -25,14 +26,37 @@
             android:background="@color/my_color_primary"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <com.google.android.material.search.SearchBar
-                android:id="@+id/search_bar"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                app:defaultMarginsEnabled="false"
-                android:layout_margin="8dp"
-                android:hint="Search" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/white"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/cambus_with_slogan_vector"/>
+
+
+                </LinearLayout>
+
+                <com.google.android.material.search.SearchBar
+                    android:id="@+id/search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:backgroundTint="@color/white"
+                    app:defaultMarginsEnabled="false"
+                    android:layout_margin="8dp"
+                    android:hint="Search" />
+
+            </LinearLayout>
 
             </com.google.android.material.appbar.MaterialToolbar>
 

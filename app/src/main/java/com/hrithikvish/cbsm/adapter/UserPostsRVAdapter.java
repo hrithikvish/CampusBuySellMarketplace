@@ -39,6 +39,7 @@ public class UserPostsRVAdapter extends RecyclerView.Adapter<UserPostsRVAdapter.
     public void onBindViewHolder(@NonNull userPostsRVViewHolder holder, int position) {
         PostModelClassForRV post = list.get(position);
         holder.datePosted.setText(post.getDatePosted());
+
         Glide.with(context)
                 .load(post.getPostImageUri())
                 .into(holder.postImage);

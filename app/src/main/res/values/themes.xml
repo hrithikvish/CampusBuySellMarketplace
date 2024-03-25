@@ -20,5 +20,12 @@
         <item name="titleTextColor">@color/white</item>
     </style>
 
-    <style name="Theme.CampusBuySellMarketplace" parent="Base.Theme.CampusBuySellMarketplace" />
+    <style name="Theme.CampusBuySellMarketplace" parent="Base.Theme.CampusBuySellMarketplace">
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
+    </style>
+
+    <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">@android:color/white</item>
+        <item name="android:popupElevation">5dp</item>
+    </style>
 </resources>

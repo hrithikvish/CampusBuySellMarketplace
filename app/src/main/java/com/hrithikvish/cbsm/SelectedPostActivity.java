@@ -1,7 +1,7 @@
 package com.hrithikvish.cbsm;
 
 import android.os.Bundle;
-import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +34,7 @@ public class SelectedPostActivity extends AppCompatActivity {
 
         Glide.with(this)
                 .load(selectedItem.getPostImageUri())
+                .error(R.drawable.noimage)
                 .into(binding.image);
 
         if(selectedItem.getBody().isEmpty()) {
@@ -58,13 +59,22 @@ public class SelectedPostActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
+        binding.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        binding.imgCard.setOnClickListener(view-> {
+            if(binding.image.getScaleType() == ImageView.ScaleType.CENTER_CROP) {
+                binding.image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            } else {
+                binding.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            }
+            binding.image.invalidate();
+        });
+
         binding.chatBtn.setOnClickListener(view -> {
             Toast.makeText(this, "UID: " + selectedItem.getUser(), Toast.LENGTH_SHORT).show();
         });
         binding.saveBtn.setOnClickListener(view -> {
             Toast.makeText(this, "Save?", Toast.LENGTH_SHORT).show();
         });
-
 
     }
 }

@@ -2,7 +2,9 @@ package com.hrithikvish.cbsm.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Parcelable;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -59,9 +61,12 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
         } else {
             holder.postTitle.setText(post.getTitle());
         }
+
         Glide.with(context)
                 .load(post.getPostImageUri())
+                .error(R.drawable.noimage2)
                 .into(holder.postImage);
+
         holder.datePosted.setText(post.getDatePosted());
         if(post.getBody().isEmpty()) {
             holder.postBody.setText("No Description Available");
@@ -85,7 +90,6 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
             dynamicallySetPopMenuSavePostItem(post, popup);
             handlePopupAndClicks(popup, context, post);
             popup.show();
-
         });
 
         holder.itemView.setOnLongClickListener(view -> {
