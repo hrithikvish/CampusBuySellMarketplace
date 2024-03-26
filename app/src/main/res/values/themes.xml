@@ -24,6 +24,12 @@
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
     </style>
 
+    <style name="MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/my_color_primary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/cambus_with_slogan_vector_for_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.CampusBuySellMarketplace</item>
+    </style>
+
     <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
         <item name="android:popupBackground">@android:color/white</item>
         <item name="android:popupElevation">5dp</item>

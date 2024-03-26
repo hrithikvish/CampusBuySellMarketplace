@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.hrithikvish.cbsm.utils.Constants;
 import com.hrithikvish.cbsm.utils.SharedPrefManager;
@@ -16,25 +17,20 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SplashScreen.installSplashScreen(this);
         setContentView(R.layout.activity_splash);
 
         sharedPrefManager = new SharedPrefManager(SplashActivity.this);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        boolean isLoggedIn = sharedPrefManager.getBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY);
 
-                boolean isLoggedIn = sharedPrefManager.getBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY);
+        if(isLoggedIn) {
+            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+        } else {
+            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+        }
 
-                if(isLoggedIn) {
-                    startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-                } else {
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                }
-
-                finish();
-            }
-        }, 1000);
+        finish();
 
     }
 }

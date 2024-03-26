@@ -46,11 +46,10 @@ public class ProfilePostsFragment extends Fragment {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                list.clear();
                 if(!snapshot.child("Users").child(auth.getUid()).child("userPosts").exists()) {
                     return;
                 }
-
                 binding.noPostsYet.setVisibility(View.GONE);
                 binding.progressBar.setVisibility(View.VISIBLE);
                 ArrayList<String> userPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();

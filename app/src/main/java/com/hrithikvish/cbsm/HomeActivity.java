@@ -2,11 +2,11 @@ package com.hrithikvish.cbsm;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -68,10 +68,16 @@ public class HomeActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = auth.getCurrentUser().getDisplayName();
+                String emailName = auth.getCurrentUser().getDisplayName();
+                String name;
+                if(snapshot.child("Users").child(auth.getUid()).child("name").getValue() != null) {
+                    name = snapshot.child("Users").child(auth.getUid()).child("name").getValue().toString();
+                } else {
+                    name = "";
+                }
                 String email = auth.getCurrentUser().getEmail();
                 String clgName = snapshot.child("Users").child(auth.getUid()).child("clg").getValue().toString();
-                UserProfile userProfile = new UserProfile(name, email, clgName);
+                UserProfile userProfile = new UserProfile(emailName, email, clgName, name);
                 sharedPrefManager.putObject(Constants.PROFILE_SHARED_PREF_KEY, userProfile);
             }
             @Override

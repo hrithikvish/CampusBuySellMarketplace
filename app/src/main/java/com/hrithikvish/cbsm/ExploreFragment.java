@@ -74,6 +74,7 @@ public class ExploreFragment extends Fragment {
                 binding.parentRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 binding.parentRV.setAdapter(parentRVAdapter);
                 parentRVAdapter.notifyDataSetChanged();
+                binding.progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override

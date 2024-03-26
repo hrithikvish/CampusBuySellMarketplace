@@ -1,26 +1,38 @@
 package com.hrithikvish.cbsm;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.hrithikvish.cbsm.databinding.FragmentProfileBinding;
 import com.hrithikvish.cbsm.model.UserProfile;
@@ -44,14 +56,71 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
 
-        if(user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        sharedPrefManager = new SharedPrefManager(getContext());
+        gson = new Gson();
+        String userProfileJson = sharedPrefManager.getObject(Constants.PROFILE_SHARED_PREF_KEY);
+        userProfile = gson.fromJson(userProfileJson, UserProfile.class);
+        viewPagerPostsAndSavedAdapter = new ViewPagerPostsAndSavedAdapter(getActivity().getSupportFragmentManager());
+
+        /*if(user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
             binding.nameText.setText(user.getEmail());
         } else {
             binding.nameText.setText(user.getDisplayName());
+        }*/
+
+        //setting name
+        if(!userProfile.getEmailName().isEmpty()) {
+            binding.nameText.setText(userProfile.getEmailName());
+        } else {
+            if(!userProfile.getName().isEmpty()) {
+                binding.nameText.setText(userProfile.getName());
+            } else {
+                binding.nameText.setText(userProfile.getEmail());
+            }
         }
+        /*databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });*/
+
         binding.clgText.setText(userProfile.getClg());
 
-        binding.editProfileBtn.setOnClickListener(view-> Toast.makeText(requireContext(), "Yeah Mr White", Toast.LENGTH_SHORT).show());
+        binding.editProfileBtn.setOnClickListener(view-> {
+            binding.nameText.setVisibility(View.GONE);
+            binding.nameETLayout.setVisibility(View.VISIBLE);
+        });
+
+        binding.confirmNameBtn.setOnClickListener(view-> {
+            if(binding.nameET.getText().toString().isEmpty() || binding.nameET.getText().toString()==null) {
+                binding.nameET.setError("First enter your name");
+            } else {
+                databaseReference.child("Users").child(auth.getUid()).child("name").setValue(binding.nameET.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            binding.nameText.setText(binding.nameET.getText().toString());
+
+                            sharedPrefManager.putObject(Constants.PROFILE_SHARED_PREF_KEY, new UserProfile(userProfile.getEmailName(), userProfile.getEmail(), userProfile.getClg(), binding.nameET.getText().toString()));
+                        }
+                    }
+                });
+                binding.nameText.setVisibility(View.VISIBLE);
+                binding.nameETLayout.setVisibility(View.GONE);
+            }
+        });
+
+        binding.closeEditNameLayout.setOnClickListener(view-> {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            binding.nameText.setVisibility(View.VISIBLE);
+            binding.nameETLayout.setVisibility(View.GONE);
+        });
 
         binding.postsAndSavedViewPager.setAdapter(viewPagerPostsAndSavedAdapter);
         binding.postsAndSavedTabLayout.setupWithViewPager(binding.postsAndSavedViewPager);
@@ -118,6 +187,7 @@ public class ProfileFragment extends Fragment {
 
 
 
+
         //do not write code below this
         return binding.getRoot();
     }
@@ -125,14 +195,5 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        sharedPrefManager = new SharedPrefManager(getContext());
-        gson = new Gson();
-        String userProfileJson = sharedPrefManager.getObject(Constants.PROFILE_SHARED_PREF_KEY);
-        userProfile = gson.fromJson(userProfileJson, UserProfile.class);
-        viewPagerPostsAndSavedAdapter = new ViewPagerPostsAndSavedAdapter(getActivity().getSupportFragmentManager());
     }
 }

@@ -77,7 +77,6 @@ public class FirebaseDatabaseHelper {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-/////////////////////////////////////
                 HashMap<String, Object> collegesListMap = new HashMap<>();
                 HashMap<String, Object> collegeUsersMap = new HashMap<>();
 
@@ -90,8 +89,6 @@ public class FirebaseDatabaseHelper {
                 if(collegesList != null && collegesList.contains(clg)) {
                     updateUserList(clg, uid);
                 }
-
-                ///////////////////
 
                 HashMap<String, Object> userData = new HashMap<>();
                 userData.put("email", email);

@@ -51,13 +51,85 @@
                         android:layout_marginBottom="5dp"
                         android:layout_centerHorizontal="true"/>
 
-                    <ImageView
+                    <!--<ImageView
                         android:id="@+id/editPenImg"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_alignEnd="@+id/pfp"
                         android:layout_alignBottom="@+id/pfp"
-                        android:src="@drawable/baseline_edit_24"/>
+                        android:src="@drawable/baseline_edit_24"/>-->
+
+                    <LinearLayout
+                        android:id="@+id/nameETLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/pfp"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="200dp"
+                            app:hintEnabled="false"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_height="wrap_content">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/nameET"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:paddingHorizontal="20dp"
+                                android:textStyle="bold"
+                                android:maxLines="1"
+                                android:padding="10dp"
+                                android:textAlignment="center"
+                                android:textColorHint="@color/my_grey_dark"
+                                android:textColor="@color/black"
+                                android:background="@drawable/bg_etbg"
+                                android:inputType="text"
+                                android:hint="Enter your name"
+                                android:autofillHints="emailAddress" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/confirmNameBtn"
+                            android:layout_width="50dp"
+                            android:backgroundTint="@color/green"
+                            app:cardCornerRadius="25dp"
+                            android:layout_marginEnd="10dp"
+                            app:strokeColor="@android:color/transparent"
+                            android:layout_height="50dp">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                app:tint="@color/white"
+                                android:src="@drawable/icon_right_arrow"/>
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/closeEditNameLayout"
+                            android:layout_width="50dp"
+                            android:backgroundTint="@color/red"
+                            app:cardCornerRadius="25dp"
+                            app:strokeColor="@android:color/transparent"
+                            android:layout_height="50dp">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                app:tint="@color/white"
+                                android:src="@drawable/outline_cancel_24"/>
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/nameText"
@@ -68,7 +140,7 @@
                         android:textSize="25sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="5dp"
-                        android:layout_below="@+id/pfp"
+                        android:layout_below="@+id/nameETLayout"
                         android:textAlignment="center"/>
 
                     <TextView
@@ -103,7 +175,7 @@
                             android:layout_marginEnd="10dp"
                             android:backgroundTint="@color/my_grey"
                             style="@style/Widget.MaterialComponents.Button"
-                            android:text="Edit Profile"/>
+                            android:text="Edit Name"/>
 
                         <Button
                             android:id="@+id/logoutBtn"
@@ -144,22 +216,22 @@
         android:orientation="vertical">
 
         <com.google.android.material.tabs.TabLayout
-        android:id="@+id/postsAndSavedTabLayout"
-        android:layout_width="match_parent"
-        android:backgroundTint="@color/white"
-        android:layout_height="wrap_content">
+            android:id="@+id/postsAndSavedTabLayout"
+            android:layout_width="match_parent"
+            android:backgroundTint="@color/white"
+            android:layout_height="wrap_content">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Posts"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Posts"/>
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Saved"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saved"/>
 
-    </com.google.android.material.tabs.TabLayout>
+        </com.google.android.material.tabs.TabLayout>
 
         <View
             android:id="@+id/bottomBorder"

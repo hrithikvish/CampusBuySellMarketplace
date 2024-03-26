@@ -2,14 +2,16 @@ package com.hrithikvish.cbsm.model;
 
 //for offline usage
 public class UserProfile {
+    private String emailName;
     private String name;
     private String email;
     private String clg;
 
-    public UserProfile(String name, String email, String clg) {
-        this.name = name;
+    public UserProfile(String emailName, String email, String clg, String name) {
+        this.emailName = emailName;
         this.email = email;
         this.clg = clg;
+        this.name = name;
     }
 
     public String getName() {
@@ -36,10 +38,19 @@ public class UserProfile {
         this.clg = clg;
     }
 
+    public String getEmailName() {
+        return emailName;
+    }
+
+    public void setEmailName(String emailName) {
+        this.emailName = emailName;
+    }
+
     @Override
     public String toString() {
         return "UserProfile{" +
-                "name='" + name + '\'' +
+                "emailName='" + emailName + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", clg='" + clg + '\'' +
                 '}';
