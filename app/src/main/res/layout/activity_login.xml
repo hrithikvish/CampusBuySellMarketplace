@@ -59,7 +59,7 @@
                 android:textColor="@color/black"
                 android:background="@drawable/bg_etbg"
                 android:layout_marginBottom="10dp"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:hint="Enter email"
                 android:autofillHints="emailAddress" />
 

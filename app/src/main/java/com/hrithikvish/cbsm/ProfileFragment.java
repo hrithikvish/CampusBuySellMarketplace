@@ -107,6 +107,8 @@ public class ProfileFragment extends Fragment {
                             binding.nameText.setText(binding.nameET.getText().toString());
 
                             sharedPrefManager.putObject(Constants.PROFILE_SHARED_PREF_KEY, new UserProfile(userProfile.getEmailName(), userProfile.getEmail(), userProfile.getClg(), binding.nameET.getText().toString()));
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         }
                     }
                 });
