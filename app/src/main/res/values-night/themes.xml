@@ -2,6 +2,6 @@
     <style name="Base.Theme.CampusBuySellMarketplace" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/my_color_primary</item>
         <item name="android:statusBarColor"> @color/my_color_primary </item>
-        <item name="android:textColor">@color/text_color_dark</item>
+        <item name="android:textColor">@color/text_color_light</item>
     </style>
 </resources>

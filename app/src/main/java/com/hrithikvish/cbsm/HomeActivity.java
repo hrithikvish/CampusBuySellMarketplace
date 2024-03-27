@@ -7,7 +7,6 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -80,6 +79,7 @@ public class HomeActivity extends AppCompatActivity {
                 String clgName = snapshot.child("Users").child(auth.getUid()).child("clg").getValue().toString();
                 UserProfile userProfile = new UserProfile(emailName, email, clgName, name);
                 sharedPrefManager.putObject(Constants.PROFILE_SHARED_PREF_KEY, userProfile);
+                Log.d("DONE", userProfile.toString());
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }

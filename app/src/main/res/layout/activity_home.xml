@@ -23,11 +23,11 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:layout_alignParentBottom="true"
         android:elevation="5dp"
         android:background="@color/white"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         android:paddingHorizontal="10dp"
         app:menu="@menu/bottom_nav_items"
         app:itemActiveIndicatorStyle="@style/CustomActiveIndicator"

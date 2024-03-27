@@ -3,6 +3,8 @@ package com.hrithikvish.cbsm;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -38,6 +40,23 @@ public class NewPostActivity extends AppCompatActivity implements ActivityFinish
         auth = FirebaseAuth.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(NewPostActivity.this, binding, auth, storageReference, this::finishActivity);
+
+        binding.postBtn.setEnabled(false);
+        binding.titleET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Check if the EditText has text
+                boolean isEditTextEmpty = binding.titleET.getText().toString().trim().isEmpty();
+                // Enable the button if EditText is not empty, otherwise disable it
+                binding.postBtn.setEnabled(!isEditTextEmpty);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
 
         binding.backBtn.setOnClickListener(view->{
             finish();
