@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +55,15 @@ public class ProfilePostsFragment extends Fragment {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 ArrayList<String> userPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
                 for (String userPosts : userPostsList) {
-                    PostModelClassForRV post = snapshot.child("Posts").child(userPosts).getValue(PostModelClassForRV.class);
-                    post.setPostId(snapshot.child("Posts").child(userPosts).getKey());
-                    list.add(post);
+                    if(userPosts == null) continue;
+                    System.out.println(userPosts);
+                    try {
+                        PostModelClassForRV post = snapshot.child("Posts").child(userPosts).getValue(PostModelClassForRV.class);
+                        post.setPostId(snapshot.child("Posts").child(userPosts).getKey());
+                        list.add(post);
+                    } catch (Exception e) {
+                        Log.d("EROROROR", e.getLocalizedMessage());
+                    }
                 }
                 Collections.reverse(list);
                 binding.progressBar.setVisibility(View.GONE);

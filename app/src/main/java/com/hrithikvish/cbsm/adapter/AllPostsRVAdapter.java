@@ -68,6 +68,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
                 .into(holder.postImage);
 
         holder.datePosted.setText(post.getDatePosted());
+        holder.timePosted.setText(post.getTimePosted());
         if(post.getBody().isEmpty()) {
             holder.postBody.setText("No Description Available");
         } else {
@@ -86,7 +87,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
         holder.threeDot.setOnClickListener(view -> {
             PopupMenu popup = new PopupMenu(context, holder.threeDot);
             popup.inflate(R.menu.all_posts_item_three_dot_items);
-            dynamicallyShowOrHideDeletePostItem(post, popup);
+            //dynamicallyShowOrHideDeletePostItem(post, popup);
             dynamicallySetPopMenuSavePostItem(post, popup);
             handlePopupAndClicks(popup, context, post);
             popup.show();
@@ -95,7 +96,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
         holder.itemView.setOnLongClickListener(view -> {
             PopupMenu popup = new PopupMenu(context, holder.threeDot);
             popup.inflate(R.menu.all_posts_item_three_dot_items);
-            dynamicallyShowOrHideDeletePostItem(post, popup);
+            //dynamicallyShowOrHideDeletePostItem(post, popup);
             dynamicallySetPopMenuSavePostItem(post, popup);
             handlePopupAndClicks(popup, context, post);
             return true;
@@ -110,7 +111,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
 
     }
 
-    private void dynamicallyShowOrHideDeletePostItem(PostModelClassForRV post, PopupMenu popup) {
+    /*private void dynamicallyShowOrHideDeletePostItem(PostModelClassForRV post, PopupMenu popup) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -127,7 +128,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
-    }
+    }*/
 
     private void dynamicallySetPopMenuSavePostItem(PostModelClassForRV post, PopupMenu popup) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -198,10 +199,8 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
                         public void onCancelled(@NonNull DatabaseError error) { }
                     });
                 }
-                else if (id == R.id.chat) {
+                else {
                     Toast.makeText(context, "Chat Clicked", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Delete CLicked", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }
@@ -214,7 +213,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
     }
 
     public class postsRVViewHolder extends RecyclerView.ViewHolder{
-        TextView postTitle, postBody, clg, datePosted, threeDot;
+        TextView postTitle, postBody, clg, datePosted, timePosted, threeDot;
         ImageView postImage;
         public postsRVViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -223,6 +222,7 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
             postBody = itemView.findViewById(R.id.postBody);
             clg = itemView.findViewById(R.id.clgName);
             datePosted = itemView.findViewById(R.id.datePosted);
+            timePosted = itemView.findViewById(R.id.timePosted);
             postImage = itemView.findViewById(R.id.postImageView);
             threeDot = itemView.findViewById(R.id.threeDot);
         }

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,6 @@ import com.hrithikvish.cbsm.databinding.FragmentProfileSavedBinding;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.hrithikvish.cbsm.adapter.UserPostsRVAdapter;
 import com.hrithikvish.cbsm.model.PostModelClassForRV;
 
 public class ProfileSavedFragment extends Fragment {
@@ -58,9 +58,14 @@ public class ProfileSavedFragment extends Fragment {
 //                binding.progressBar.setVisibility(View.VISIBLE);
                 ArrayList<String> savedPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
                 for (String savedPost : savedPostsList) {
-                    PostModelClassForRV post = snapshot.child("Posts").child(savedPost).getValue(PostModelClassForRV.class);
-                    post.setPostId(snapshot.child("Posts").child(savedPost).getKey());
-                    list.add(post);
+                    if(savedPost == null) continue;
+                    try {
+                        PostModelClassForRV post = snapshot.child("Posts").child(savedPost).getValue(PostModelClassForRV.class);
+                        post.setPostId(snapshot.child("Posts").child(savedPost).getKey());
+                        list.add(post);
+                    } catch(Exception e) {
+                        Log.d("ERROOROR", e.getLocalizedMessage()+"");
+                    }
                 }
                 Collections.reverse(list);
 //                binding.progressBar.setVisibility(View.GONE);
