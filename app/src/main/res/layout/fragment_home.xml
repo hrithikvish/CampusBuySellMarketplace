@@ -47,14 +47,27 @@
 
                 </LinearLayout>
 
-                <com.google.android.material.search.SearchBar
-                    android:id="@+id/search_bar"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:backgroundTint="@color/white"
-                    app:defaultMarginsEnabled="false"
-                    android:layout_margin="8dp"
-                    android:hint="Search" />
+                    app:hintEnabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/searchBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:paddingHorizontal="20dp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:padding="10dp"
+                        android:imeOptions="actionSearch"
+                        android:textColorHint="@color/my_grey_dark"
+                        android:textColor="@color/black"
+                        android:background="@drawable/bg_etbg"
+                        android:hint="Search Items"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
@@ -62,15 +75,21 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.search.SearchView
+    <!--<com.google.android.material.search.SearchView
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="Search items"
         app:layout_anchor="@id/search_bar">
 
-        <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/SearchUserPostsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:listitem="@layout/all_posts_item_card_view"/>
 
-    </com.google.android.material.search.SearchView>
+    </com.google.android.material.search.SearchView>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userPostsRecyclerView"

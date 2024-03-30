@@ -5,7 +5,8 @@
     android:layout_height="150dp"
     android:layout_marginEnd="5dp"
     android:backgroundTint="@color/white"
-    app:cardCornerRadius="5dp"
+    app:cardCornerRadius="10dp"
+    app:strokeColor="@android:color/transparent"
     xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout

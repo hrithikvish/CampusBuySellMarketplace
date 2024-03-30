@@ -27,6 +27,11 @@ public class ExploreParentRVAdapter extends RecyclerView.Adapter<ExploreParentRV
         this.collegesList = collegesList;
     }
 
+    public void filterList(ArrayList<ParentItemModelClassForRV> filteredList) {
+        collegesList = filteredList;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ExploreParentRVAdapter.ParentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

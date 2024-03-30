@@ -53,8 +53,6 @@ public class HomeActivity extends AppCompatActivity {
                     Intent intent = new Intent(HomeActivity.this, NewPostActivity.class);
                     saveCurrentFragment();
                     startActivity(intent);
-                } else if (id == R.id.navChat) {
-                    loadFragment(new ChatFragment());
                 } else {
                     loadFragment(new ProfileFragment());
                 }
@@ -93,8 +91,6 @@ public class HomeActivity extends AppCompatActivity {
             sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navHome);
         } else if (currentFragment instanceof ExploreFragment) {
             sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navExplore);
-        } else if (currentFragment instanceof ChatFragment) {
-            sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navChat);
         } else {
             sharedPrefManager.putInt(Constants.LAST_SELECTED_ITEM, R.id.navProfile);
         }

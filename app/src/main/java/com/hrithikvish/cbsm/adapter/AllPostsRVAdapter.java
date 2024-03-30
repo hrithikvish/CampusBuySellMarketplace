@@ -3,6 +3,7 @@ package com.hrithikvish.cbsm.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseArray;
@@ -10,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -33,11 +36,13 @@ import com.hrithikvish.cbsm.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.postsRVViewHolder> {
 
     Context context;
     ArrayList<PostModelClassForRV> postList;
+
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -129,6 +134,10 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
             public void onCancelled(@NonNull DatabaseError error) { }
         });
     }*/
+        public void filterList(ArrayList<PostModelClassForRV> filteredList) {
+            postList = filteredList;
+            notifyDataSetChanged();
+        }
 
     private void dynamicallySetPopMenuSavePostItem(PostModelClassForRV post, PopupMenu popup) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -200,7 +209,19 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
                     });
                 }
                 else {
-                    Toast.makeText(context, "Chat Clicked", Toast.LENGTH_SHORT).show();
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String mail = (String) snapshot.child("Users").child(post.getUser()).child("email").getValue();
+                            Log.d("MAIL", mail);
+                            Intent intent = new Intent(Intent.ACTION_SENDTO);
+                            intent.setData(Uri.parse("mailto:"+mail));
+                            context.startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) { }
+                    });
                 }
                 return true;
             }
@@ -211,6 +232,34 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
     public int getItemCount() {
         return postList.size();
     }
+
+    /*@Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                List<PostModelClassForRV> filteredResults = new ArrayList<>();
+
+                for (PostModelClassForRV data : postList) {
+                    if (data.getTitle().toLowerCase().contains(filterPattern) || data.getBody().toLowerCase().contains(filterPattern)) {
+                        filteredResults.add(data);
+                    }
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredResults;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredList.clear();
+                filteredList.addAll((List<PostModelClassForRV>) results.values);
+                notifyDataSetChanged();
+            }
+        };
+    }*/
 
     public class postsRVViewHolder extends RecyclerView.ViewHolder{
         TextView postTitle, postBody, clg, datePosted, timePosted, threeDot;

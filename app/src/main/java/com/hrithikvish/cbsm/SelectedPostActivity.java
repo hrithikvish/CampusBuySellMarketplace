@@ -1,5 +1,7 @@
 package com.hrithikvish.cbsm;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -120,7 +122,18 @@ public class SelectedPostActivity extends AppCompatActivity {
         });
 
         binding.chatBtn.setOnClickListener(view -> {
-            Toast.makeText(this, "UID: " + selectedItem.getUser(), Toast.LENGTH_SHORT).show();
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String mail = (String) snapshot.child("Users").child(selectedItem.getUser()).child("email").getValue();
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:"+mail));
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
         });
 
         //setting save btn as unsave btn if alreasy saved

@@ -6,5 +6,5 @@
         android:title="Save Item" />
     <item
         android:id="@+id/chat"
-        android:title="Chat with Seller" />
+        android:title="Send Email" />
 </menu>

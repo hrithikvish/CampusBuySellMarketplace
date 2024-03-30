@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,6 +83,29 @@ public class ExploreFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
+        binding.searchBar.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.toString().isEmpty()) {
+                    parentRVAdapter.filterList(collegesListMain);
+                }
+                ArrayList<ParentItemModelClassForRV> filteredList = new ArrayList<>();
+                for(ParentItemModelClassForRV post : collegesListMain) {
+                    if(post.getCollegeName().toLowerCase().contains(editable.toString().toLowerCase())) {
+                        filteredList.add(post);
+                    }
+                }
+                parentRVAdapter.filterList(filteredList);
+            }
+        });
 
         //
         return binding.getRoot();
