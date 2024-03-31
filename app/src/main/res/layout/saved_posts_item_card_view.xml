@@ -31,15 +31,33 @@
                 android:scaleType="center"
                 tools:src="@drawable/noimage" />
 
-            <TextView
-                android:id="@+id/datePostedText"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/postImageView"
-                android:background="#60FFFFFF"
-                android:padding="5dp"
-                android:textSize="10sp"
-                tools:text="Date Posted" />
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_above="@+id/datePostedText"
+                    android:padding="5dp"
+                    android:textSize="15sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    tools:text="DummyTitleDummyTitleDummyTitleDummyTitle" />
+
+                <TextView
+                    android:id="@+id/datePostedText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:padding="5dp"
+                    android:textSize="12sp"
+                    tools:text="Date Posted" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 

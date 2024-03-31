@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,7 +44,7 @@ public class ProfilePostsFragment extends Fragment {
         list = new ArrayList<>();
 
         binding.userPostsRecyclerView.setHasFixedSize(true);
-        binding.userPostsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
+        binding.userPostsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -52,7 +53,7 @@ public class ProfilePostsFragment extends Fragment {
                     return;
                 }
                 binding.noPostsYet.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.VISIBLE);
+                //binding.progressBar.setVisibility(View.VISIBLE);
                 ArrayList<String> userPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
                 for (String userPosts : userPostsList) {
                     if(userPosts == null) continue;
@@ -66,7 +67,7 @@ public class ProfilePostsFragment extends Fragment {
                     }
                 }
                 Collections.reverse(list);
-                binding.progressBar.setVisibility(View.GONE);
+                //binding.progressBar.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
             }
             @Override

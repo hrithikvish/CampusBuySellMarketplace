@@ -38,6 +38,7 @@ public class UserPostsRVAdapter extends RecyclerView.Adapter<UserPostsRVAdapter.
     @Override
     public void onBindViewHolder(@NonNull userPostsRVViewHolder holder, int position) {
         PostModelClassForRV post = list.get(position);
+        holder.title.setText(post.getTitle());
         holder.datePosted.setText(post.getDatePosted());
 
         Glide.with(context)
@@ -58,12 +59,13 @@ public class UserPostsRVAdapter extends RecyclerView.Adapter<UserPostsRVAdapter.
     }
 
     public static class userPostsRVViewHolder extends RecyclerView.ViewHolder {
-        TextView datePosted;
+        TextView datePosted, title;
         ImageView postImage;
         public userPostsRVViewHolder(@NonNull View itemView) {
             super(itemView);
 
             postImage = itemView.findViewById(R.id.postImageView);
+            title = itemView.findViewById(R.id.title);
             datePosted = itemView.findViewById(R.id.datePostedText);
         }
     }

@@ -29,9 +29,9 @@ public class ViewPagerPostsAndSavedAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if(position == 0) {
-            return "Posts";
+            return "Your Items";
         } else {
-            return "Saved";
+            return "Saved Items";
         }
     }
 

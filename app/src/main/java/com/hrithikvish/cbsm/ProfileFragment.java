@@ -52,7 +52,7 @@ public class ProfileFragment extends Fragment {
             binding.nameText.setText(user.getEmail());
         } else {
             binding.nameText.setText(user.getDisplayName());
-            binding.editProfileBtn.setVisibility(View.GONE);
+            //binding.editProfileBtn.setVisibility(View.GONE);
         }
 
         //setting name
