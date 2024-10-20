@@ -1,119 +1,110 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.hrithikvish.cbsm.databinding.ActivityNewPostBinding
+import com.hrithikvish.cbsm.utils.ActivityFinisher
+import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+class NewPostActivity : AppCompatActivity(), ActivityFinisher {
+    var binding: ActivityNewPostBinding? = null
+    var auth: FirebaseAuth? = null
+    var storageReference: StorageReference? = null
+    var firebaseDatabaseHelper: FirebaseDatabaseHelper? = null
+    var imageUri: Uri? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityNewPostBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.hrithikvish.cbsm.databinding.ActivityNewPostBinding;
-import com.hrithikvish.cbsm.utils.ActivityFinisher;
-import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
+        auth = FirebaseAuth.getInstance()
+        storageReference = FirebaseStorage.getInstance().reference
+        firebaseDatabaseHelper = FirebaseDatabaseHelper(
+            this@NewPostActivity, binding, auth!!, storageReference
+        ) { finishActivity() }
 
-import java.net.URI;
+        binding!!.postBtn.isEnabled = false
+        binding!!.titleET.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
 
-public class NewPostActivity extends AppCompatActivity implements ActivityFinisher {
-
-    ActivityNewPostBinding binding;
-    FirebaseAuth auth;
-    StorageReference storageReference;
-    FirebaseDatabaseHelper firebaseDatabaseHelper;
-    static final int PICK_IMAGE = 1;
-    Uri imageUri;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityNewPostBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        auth = FirebaseAuth.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(NewPostActivity.this, binding, auth, storageReference, this::finishActivity);
-
-        binding.postBtn.setEnabled(false);
-        binding.titleET.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 // Check if the EditText has text
-                boolean isEditTextEmpty = binding.titleET.getText().toString().trim().isEmpty();
+                val isEditTextEmpty = binding!!.titleET.text.toString().trim { it <= ' ' }.isEmpty()
                 // Enable the button if EditText is not empty, otherwise disable it
-                binding.postBtn.setEnabled(!isEditTextEmpty);
+                binding!!.postBtn.isEnabled = !isEditTextEmpty
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) { }
-        });
+            override fun afterTextChanged(editable: Editable) {}
+        })
 
-        binding.backBtn.setOnClickListener(view->{
-            finish();
-        });
+        binding!!.backBtn.setOnClickListener { view: View? ->
+            finish()
+        }
 
-        binding.addImgIcon.setOnClickListener(view-> {
-            selectImage();
-        });
+        binding!!.addImgIcon.setOnClickListener { view: View? ->
+            selectImage()
+        }
 
-        binding.postBtn.setOnClickListener(view->{
-            String title = binding.titleET.getText().toString().trim();
-            String body = binding.bodyTextET.getText().toString().trim();
-            changePostBtnToProgBar(true);
-            Toast.makeText(NewPostActivity.this, "Please Wait...", Toast.LENGTH_LONG).show();
-            firebaseDatabaseHelper.addPostIntoFbDb(title, body, imageUri);
-            Log.d("IMAGE URI LOG", imageUri + "");
-        });
-
+        binding!!.postBtn.setOnClickListener { view: View? ->
+            val title = binding!!.titleET.text.toString().trim { it <= ' ' }
+            val body = binding!!.bodyTextET.text.toString().trim { it <= ' ' }
+            changePostBtnToProgBar(true)
+            Toast.makeText(this@NewPostActivity, "Please Wait...", Toast.LENGTH_LONG)
+                .show()
+            firebaseDatabaseHelper!!.addPostIntoFbDb(title, body, imageUri!!)
+            Log.d("IMAGE URI LOG", imageUri.toString() + "")
+        }
     }
 
-    private void selectImage() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE);
+    private fun selectImage() {
+        val intent = Intent()
+        intent.setAction(Intent.ACTION_GET_CONTENT)
+        intent.setType("image/*")
+        startActivityForResult(intent, PICK_IMAGE)
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==PICK_IMAGE && resultCode==RESULT_OK && data!=null) {
-            imageUri = data.getData();
-            Glide.with(NewPostActivity.this)
-                            .load(imageUri)
-                            .into(binding.imageThumb);
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            imageUri = data.data
+            Glide.with(this@NewPostActivity)
+                .load(imageUri)
+                .into(binding!!.imageThumb)
             //binding.imageThumb.setImageURI(imageUri);
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        changePostBtnToProgBar(false);
+    override fun onStop() {
+        super.onStop()
+        changePostBtnToProgBar(false)
     }
 
-    private void changePostBtnToProgBar(Boolean isLoading) {
-        if(isLoading) {
-            binding.postBar.setVisibility(View.VISIBLE);
-            binding.postBtn.setText("");
+    private fun changePostBtnToProgBar(isLoading: Boolean) {
+        if (isLoading) {
+            binding!!.postBar.visibility = View.VISIBLE
+            binding!!.postBtn.text = ""
         } else {
-            binding.postBar.setVisibility(View.GONE);
-            binding.postBtn.setText("Post");
+            binding!!.postBar.visibility = View.GONE
+            binding!!.postBtn.text = "Post"
         }
     }
 
-    @Override
-    public void finishActivity() {
-        finish();
+    override fun finishActivity() {
+        finish()
+    }
+
+    companion object {
+        const val PICK_IMAGE: Int = 1
     }
 }

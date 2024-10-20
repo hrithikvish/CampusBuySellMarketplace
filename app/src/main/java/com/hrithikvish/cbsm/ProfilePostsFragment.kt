@@ -1,87 +1,83 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.os.Bundle;
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.adapter.UserPostsRVAdapter
+import com.hrithikvish.cbsm.databinding.FragmentProfilePostsBinding
+import com.hrithikvish.cbsm.model.PostModelClassForRV
+import java.util.Collections
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
+class ProfilePostsFragment : Fragment() {
+    var binding: FragmentProfilePostsBinding? = null
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+    var databaseReference: DatabaseReference? = null
+    var auth: FirebaseAuth? = null
+    var adapter: UserPostsRVAdapter? = null
+    var list: ArrayList<PostModelClassForRV>? = null
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentProfilePostsBinding.inflate(inflater, container, false)
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.databinding.FragmentProfilePostsBinding;
+        databaseReference = FirebaseDatabase.getInstance().reference
+        auth = FirebaseAuth.getInstance()
+        list = ArrayList()
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import com.hrithikvish.cbsm.adapter.UserPostsRVAdapter;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
-
-public class ProfilePostsFragment extends Fragment {
-
-    FragmentProfilePostsBinding binding;
-
-    DatabaseReference databaseReference;
-    FirebaseAuth auth;
-    UserPostsRVAdapter adapter;
-    ArrayList<PostModelClassForRV> list;
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentProfilePostsBinding.inflate(inflater, container, false);
-
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        auth = FirebaseAuth.getInstance();
-        list = new ArrayList<>();
-
-        binding.userPostsRecyclerView.setHasFixedSize(true);
-        binding.userPostsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                list.clear();
-                if(!snapshot.child("Users").child(auth.getUid()).child("userPosts").exists()) {
-                    return;
+        binding!!.userPostsRecyclerView.setHasFixedSize(true)
+        binding!!.userPostsRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        databaseReference!!.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                list!!.clear()
+                if (!snapshot.child("Users").child(auth!!.uid!!).child("userPosts").exists()) {
+                    return
                 }
-                binding.noPostsYet.setVisibility(View.GONE);
+                binding!!.noPostsYet.visibility = View.GONE
                 //binding.progressBar.setVisibility(View.VISIBLE);
-                ArrayList<String> userPostsList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
-                for (String userPosts : userPostsList) {
-                    if(userPosts == null) continue;
-                    System.out.println(userPosts);
+                val userPostsList = snapshot.child("Users").child(
+                    auth!!.uid!!
+                ).child("userPosts").value as ArrayList<String>?
+                for (userPosts in userPostsList!!) {
+                    if (userPosts == null) continue
+                    println(userPosts)
                     try {
-                        PostModelClassForRV post = snapshot.child("Posts").child(userPosts).getValue(PostModelClassForRV.class);
-                        post.setPostId(snapshot.child("Posts").child(userPosts).getKey());
-                        list.add(post);
-                    } catch (Exception e) {
-                        Log.d("EROROROR", e.getLocalizedMessage());
+                        val post = snapshot.child("Posts").child(userPosts).getValue(
+                            PostModelClassForRV::class.java
+                        )
+                        post!!.postId = snapshot.child("Posts").child(userPosts).key
+                        list!!.add(post)
+                    } catch (e: Exception) {
+                        Log.d("EROROROR", e.localizedMessage)
                     }
                 }
-                Collections.reverse(list);
+                Collections.reverse(list)
                 //binding.progressBar.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+                adapter!!.notifyDataSetChanged()
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
-        adapter = new UserPostsRVAdapter(getContext(), list);
-        binding.userPostsRecyclerView.setAdapter(adapter);
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+        adapter = UserPostsRVAdapter(context, list)
+        binding!!.userPostsRecyclerView.adapter = adapter
 
 
         //don't go below this comment
-        return binding.getRoot();
+        return binding!!.root
     }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 }

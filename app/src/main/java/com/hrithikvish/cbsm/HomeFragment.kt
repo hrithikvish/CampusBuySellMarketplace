@@ -1,100 +1,101 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.adapter.AllPostsRVAdapter
+import com.hrithikvish.cbsm.databinding.FragmentHomeBinding
+import com.hrithikvish.cbsm.model.PostModelClassForRV
+import java.util.Collections
+import java.util.Locale
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class HomeFragment : Fragment() {
+    var binding: FragmentHomeBinding? = null
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.adapter.AllPostsRVAdapter;
-import com.hrithikvish.cbsm.databinding.FragmentHomeBinding;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
+    var databaseReference: DatabaseReference? = null
+    var adapter: AllPostsRVAdapter? = null
+    var list: ArrayList<PostModelClassForRV>? = null
 
-import java.util.ArrayList;
-import java.util.Collections;
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
 
-public class HomeFragment extends Fragment {
+        databaseReference = FirebaseDatabase.getInstance().reference
+        list = ArrayList()
 
-    FragmentHomeBinding binding;
+        initRV(binding!!.userPostsRecyclerView)
+        binding!!.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
 
-    DatabaseReference databaseReference;
-    AllPostsRVAdapter adapter;
-    ArrayList<PostModelClassForRV> list;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding =  FragmentHomeBinding.inflate(getLayoutInflater(), container, false);
-
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        list = new ArrayList<>();
-
-        initRV(binding.userPostsRecyclerView);
-        binding.searchBar.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if(editable.toString().isEmpty()) {
-                    adapter.filterList(list);
+            override fun afterTextChanged(editable: Editable) {
+                if (editable.toString().isEmpty()) {
+                    adapter!!.filterList(list)
                 }
-                ArrayList<PostModelClassForRV> filteredList = new ArrayList<>();
-                for(PostModelClassForRV post : list) {
-                    if(post.getTitle().toLowerCase().contains(editable.toString().toLowerCase()) || post.getBody().toLowerCase().contains(editable.toString().toLowerCase())) {
-                        filteredList.add(post);
+                val filteredList = ArrayList<PostModelClassForRV>()
+                for (post in list!!) {
+                    if (post!!.title!!.lowercase(Locale.getDefault()).contains(
+                            editable.toString().lowercase(
+                                Locale.getDefault()
+                            )
+                        ) || post.body!!.lowercase(Locale.getDefault()).contains(
+                            editable.toString().lowercase(
+                                Locale.getDefault()
+                            )
+                        )
+                    ) {
+                        filteredList.add(post)
                     }
                 }
-                adapter.filterList(filteredList);
+                adapter!!.filterList(filteredList)
             }
-        });
+        })
 
         // forbidden
-        return binding.getRoot();
+        return binding!!.root
     }
 
-    private void initRV(RecyclerView rv) {
-        rv.setHasFixedSize(true);
-        rv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                list.clear();
-                for (DataSnapshot dataSnapshot : snapshot.child("Posts").getChildren()) {
-                    PostModelClassForRV post = dataSnapshot.getValue(PostModelClassForRV.class);
-                    post.setPostId(dataSnapshot.getKey());
-                    list.add(post);
+    private fun initRV(rv: RecyclerView) {
+        rv.setHasFixedSize(true)
+        rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        databaseReference!!.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                list!!.clear()
+                for (dataSnapshot in snapshot.child("Posts").children) {
+                    val post = dataSnapshot.getValue(
+                        PostModelClassForRV::class.java
+                    )
+                    post!!.postId = dataSnapshot.key
+                    list!!.add(post)
                 }
-                Collections.reverse(list);
-                binding.progressBar.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+                Collections.reverse(list)
+                binding!!.progressBar.visibility = View.GONE
+                adapter!!.notifyDataSetChanged()
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
-        adapter = new AllPostsRVAdapter(getContext(), list);
-        rv.setAdapter(adapter);
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+        adapter = AllPostsRVAdapter(context, list)
+        rv.adapter = adapter
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 }

@@ -1,86 +1,64 @@
-package com.hrithikvish.cbsm.adapter;
+package com.hrithikvish.cbsm.adapter
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.content.Context
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.hrithikvish.cbsm.R
+import com.hrithikvish.cbsm.SelectedPostActivity
+import com.hrithikvish.cbsm.adapter.ExploreChildRVAdapter.ChildViewHolder
+import com.hrithikvish.cbsm.model.PostModelClassForRV
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
-import com.hrithikvish.cbsm.R;
-import com.hrithikvish.cbsm.SelectedPostActivity;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
-
-import java.util.ArrayList;
-
-public class ExploreChildRVAdapter extends RecyclerView.Adapter<ExploreChildRVAdapter.ChildViewHolder> {
-
-    Context context;
-    ArrayList<PostModelClassForRV> postList;
-
-    public ExploreChildRVAdapter(Context context, ArrayList<PostModelClassForRV> postList) {
-        this.context = context;
-        this.postList = postList;
+class ExploreChildRVAdapter(var context: Context, var postList: ArrayList<PostModelClassForRV?>?) :
+    RecyclerView.Adapter<ChildViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChildViewHolder {
+        val view =
+            LayoutInflater.from(context).inflate(R.layout.explore_page_child_rv_item, parent, false)
+        return ChildViewHolder(view)
     }
 
-    @NonNull
-    @Override
-    public ChildViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.explore_page_child_rv_item, parent, false);
-        return new ChildViewHolder(view);
-    }
+    override fun onBindViewHolder(holder: ChildViewHolder, position: Int) {
+        val post = postList!![position]
 
-    @Override
-    public void onBindViewHolder(@NonNull ChildViewHolder holder, int position) {
-        PostModelClassForRV post = postList.get(position);
-
-        if(post != null) {
-            if(post.getTitle().isEmpty()) {
-                holder.postTitle.setText("No Title Available");
+        if (post != null) {
+            if (post.title!!.isEmpty()) {
+                holder.postTitle.text = "No Title Available"
             } else {
-                holder.postTitle.setText(post.getTitle());
+                holder.postTitle.text = post.title
             }
-            if(post.getBody().isEmpty()) {
-                holder.postBody.setText("No Description Available");
+            if (post.body!!.isEmpty()) {
+                holder.postBody.text = "No Description Available"
             } else {
-                holder.postBody.setText(post.getBody());
+                holder.postBody.text = post.body
             }
-            holder.datePosted.setText(post.getDatePosted());
+            holder.datePosted.text = post.datePosted
             Glide.with(context)
-                    .load(post.getPostImageUri())
-                    .into(holder.postImage);
+                .load(post.postImageUri)
+                .into(holder.postImage)
 
-            holder.itemView.setOnClickListener(view-> {
-                PostModelClassForRV selectedPost = postList.get(position);
-                Intent intent = new Intent(context, SelectedPostActivity.class);
-                intent.putExtra("selectedPost", selectedPost);
-                context.startActivity(intent);
-            });
+            holder.itemView.setOnClickListener { view: View? ->
+                val selectedPost = postList!![position]
+                val intent = Intent(context, SelectedPostActivity::class.java)
+                intent.putExtra("selectedPost", selectedPost)
+                context.startActivity(intent)
+            }
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return postList.size();
+    override fun getItemCount(): Int {
+        return postList!!.size
     }
 
-    public class ChildViewHolder extends RecyclerView.ViewHolder{
-        TextView postTitle, postBody, datePosted;
-        ImageView postImage;
-        public ChildViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            postTitle = itemView.findViewById(R.id.postTitle);
-            postBody = itemView.findViewById(R.id.postBody);
-            datePosted = itemView.findViewById(R.id.datePosted);
-            postImage = itemView.findViewById(R.id.postImage);
-
-        }
+    inner class ChildViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var postTitle: TextView = itemView.findViewById(R.id.postTitle)
+        var postBody: TextView = itemView.findViewById(R.id.postBody)
+        var datePosted: TextView = itemView.findViewById(R.id.datePosted)
+        var postImage: ImageView =
+            itemView.findViewById(R.id.postImage)
     }
 }

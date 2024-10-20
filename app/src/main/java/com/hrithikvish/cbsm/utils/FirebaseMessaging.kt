@@ -1,19 +1,14 @@
-package com.hrithikvish.cbsm.utils;
+package com.hrithikvish.cbsm.utils
 
-import androidx.annotation.NonNull;
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-
-public class FirebaseMessaging extends FirebaseMessagingService {
-    @Override
-    public void onNewToken(@NonNull String token) {
-        super.onNewToken(token);
+class FirebaseMessaging : FirebaseMessagingService() {
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
     }
 
-    @Override
-    public void onMessageReceived(@NonNull RemoteMessage message) {
-        super.onMessageReceived(message);
+    override fun onMessageReceived(message: RemoteMessage) {
+        super.onMessageReceived(message)
     }
-
 }

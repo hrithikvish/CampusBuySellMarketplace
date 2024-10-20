@@ -1,57 +1,55 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
+import com.hrithikvish.cbsm.adapter.ViewPagerPostsAndSavedAdapter
+import com.hrithikvish.cbsm.databinding.FragmentProfileBinding
+import com.hrithikvish.cbsm.model.UserProfile
+import com.hrithikvish.cbsm.utils.Constants
+import com.hrithikvish.cbsm.utils.SharedPrefManager
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+class ProfileFragment : Fragment() {
+    var binding: FragmentProfileBinding? = null
+    var auth: FirebaseAuth? = null
+    var user: FirebaseUser? = null
+    var databaseReference: DatabaseReference? = null
+    var sharedPrefManager: SharedPrefManager? = null
+    var userProfile: UserProfile? = null
+    var gson: Gson? = null
+    var viewPagerPostsAndSavedAdapter: ViewPagerPostsAndSavedAdapter? = null
+    var googleSignInClient: GoogleSignInClient? = null
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.Gson;
-import com.hrithikvish.cbsm.adapter.ViewPagerPostsAndSavedAdapter;
-import com.hrithikvish.cbsm.databinding.FragmentProfileBinding;
-import com.hrithikvish.cbsm.model.UserProfile;
-import com.hrithikvish.cbsm.utils.Constants;
-import com.hrithikvish.cbsm.utils.SharedPrefManager;
+        gson = Gson()
+        val userProfileJson = sharedPrefManager!!.getObject(Constants.PROFILE_SHARED_PREF_KEY)
+        userProfile = gson!!.fromJson(userProfileJson, UserProfile::class.java)
 
-public class ProfileFragment extends Fragment {
-
-    FragmentProfileBinding binding;
-    FirebaseAuth auth;
-    FirebaseUser user;
-    DatabaseReference databaseReference;
-    SharedPrefManager sharedPrefManager;
-    UserProfile userProfile;
-    Gson gson;
-    ViewPagerPostsAndSavedAdapter viewPagerPostsAndSavedAdapter;
-    GoogleSignInClient googleSignInClient;
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentProfileBinding.inflate(inflater, container, false);
-
-        gson = new Gson();
-        String userProfileJson = sharedPrefManager.getObject(Constants.PROFILE_SHARED_PREF_KEY);
-        userProfile = gson.fromJson(userProfileJson, UserProfile.class);
-
-        if(user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
-            binding.nameText.setText(user.getEmail());
+        if (user!!.displayName == null || user!!.displayName!!.isEmpty()) {
+            binding!!.nameText.text = user!!.email
         } else {
-            binding.nameText.setText(user.getDisplayName());
+            binding!!.nameText.text = user!!.displayName
             //binding.editProfileBtn.setVisibility(View.GONE);
         }
 
@@ -66,8 +64,7 @@ public class ProfileFragment extends Fragment {
                 binding.nameText.setText(userProfile.getEmail());
             }
         }*/
-
-        binding.clgText.setText(userProfile.getClg());
+        binding!!.clgText.text = userProfile!!.getClg()
 
         /*binding.editProfileBtn.setOnClickListener(view-> {
             binding.nameText.setVisibility(View.GONE);
@@ -94,92 +91,93 @@ public class ProfileFragment extends Fragment {
                 binding.nameETLayout.setVisibility(View.GONE);
             }
         });*/
+        binding!!.closeEditNameLayout.setOnClickListener { view: View ->
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            binding!!.nameText.visibility = View.VISIBLE
+            binding!!.nameETLayout.visibility = View.GONE
+        }
 
-        binding.closeEditNameLayout.setOnClickListener(view-> {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            binding.nameText.setVisibility(View.VISIBLE);
-            binding.nameETLayout.setVisibility(View.GONE);
-        });
+        binding!!.postsAndSavedViewPager.adapter = viewPagerPostsAndSavedAdapter
+        binding!!.postsAndSavedTabLayout.setupWithViewPager(binding!!.postsAndSavedViewPager)
 
-        binding.postsAndSavedViewPager.setAdapter(viewPagerPostsAndSavedAdapter);
-        binding.postsAndSavedTabLayout.setupWithViewPager(binding.postsAndSavedViewPager);
-
-        binding.logoutBtn.setOnClickListener(view-> {
+        binding!!.logoutBtn.setOnClickListener { view: View? ->
             //auth.signOut();
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Are you sure, you want to logout?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
-                    googleSignInClient = GoogleSignIn.getClient(getContext(), gso);
-                    googleSignInClient.signOut();
+            val builder = AlertDialog.Builder(activity)
+            builder.setMessage("Are you sure, you want to logout?")
+            builder.setPositiveButton(
+                "Yes"
+            ) { dialogInterface, i ->
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(Constants.CLIENT_ID)
+                        .requestEmail().build()
+                googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+                googleSignInClient!!.signOut()
 
-                    sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, false);
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
-                    getActivity().finish();
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {}
-            });
+                sharedPrefManager!!.putBoolean(
+                    Constants.LOGIN_SESSION_SHARED_PREF_KEY,
+                    false
+                )
+                startActivity(Intent(activity, LoginActivity::class.java))
+                requireActivity().finish()
+            }
+            builder.setNegativeButton("Cancel") { dialogInterface, i -> }
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        });
+            val dialog = builder.create()
+            dialog.show()
+        }
 
-        binding.appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isCollapsed = false;
-            int scrollRange = -1;
+        binding!!.appbar.addOnOffsetChangedListener(object : OnOffsetChangedListener {
+            var isCollapsed: Boolean = false
+            var scrollRange: Int = -1
 
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
                 if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
+                    scrollRange = appBarLayout.totalScrollRange
                 }
                 if (scrollRange + verticalOffset == 0) {
                     // Collapsed
                     if (!isCollapsed) {
-                        binding.mineToolbar.setVisibility(View.VISIBLE);
-                        binding.mineToolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.my_color_primary));
-                        if(user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
-                            String string = user.getEmail();
-                            String newString = string.substring(0, string.length() - 10);
-                            binding.mineToolbar.setTitle(newString);
+                        binding!!.mineToolbar.visibility = View.VISIBLE
+                        binding!!.mineToolbar.setBackgroundColor(activity!!.resources.getColor(R.color.my_color_primary))
+                        if (user!!.displayName == null || user!!.displayName!!.isEmpty()) {
+                            val string = user!!.email
+                            val newString = string!!.substring(0, string.length - 10)
+                            binding!!.mineToolbar.title = newString
                         } else {
-                            binding.mineToolbar.setTitle(user.getDisplayName());
+                            binding!!.mineToolbar.title = user!!.displayName
                         }
-                        isCollapsed = true;
+                        isCollapsed = true
                     }
                 } else {
                     // Not collapsed
                     if (isCollapsed) {
-                        binding.mineToolbar.setVisibility(View.INVISIBLE);
-                        binding.mineToolbar.setBackgroundColor(getActivity().getResources().getColor(android.R.color.transparent));
-                        binding.collapsingToolbar.setTitle("");
-                        isCollapsed = false;
+                        binding!!.mineToolbar.visibility = View.INVISIBLE
+                        binding!!.mineToolbar.setBackgroundColor(
+                            activity!!.resources.getColor(
+                                android.R.color.transparent
+                            )
+                        )
+                        binding!!.collapsingToolbar.title = ""
+                        isCollapsed = false
                     }
                 }
             }
-        });
-
-
+        })
 
 
         //do not write code below this
-        return binding.getRoot();
+        return binding!!.root
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        sharedPrefManager = new SharedPrefManager(getContext());
-        viewPagerPostsAndSavedAdapter = new ViewPagerPostsAndSavedAdapter(getActivity().getSupportFragmentManager());
+        auth = FirebaseAuth.getInstance()
+        user = auth!!.currentUser
+        databaseReference = FirebaseDatabase.getInstance().reference
+        sharedPrefManager = SharedPrefManager(requireContext())
+        viewPagerPostsAndSavedAdapter =
+            ViewPagerPostsAndSavedAdapter(requireActivity().supportFragmentManager)
     }
 }

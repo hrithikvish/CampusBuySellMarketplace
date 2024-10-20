@@ -1,52 +1,24 @@
-package com.hrithikvish.cbsm.model;
+package com.hrithikvish.cbsm.model
 
-import java.io.Serializable;
+import java.io.Serializable
 
-public class PostModelClassForRV implements Serializable {
-    String postId, title, body, user, datePosted, timePosted, postImageUri;
+class PostModelClassForRV : Serializable {
+    @JvmField
+    var postId: String? = null
+    @JvmField
+    var title: String? = null
+    @JvmField
+    var body: String? = null
+    @JvmField
+    var user: String? = null
+    @JvmField
+    var datePosted: String? = null
+    @JvmField
+    var timePosted: String? = null
+    @JvmField
+    var postImageUri: String? = null
 
-    public String getPostId() {
-        return postId;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setPostImageUri(String postImageUri) {
-        this.postImageUri = postImageUri;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public String getDatePosted() {
-        return datePosted;
-    }
-
-    public String getTimePosted() {
-        return timePosted;
-    }
-
-    public String getPostImageUri() {
-        return postImageUri;
-    }
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "PostModalClassForRV{" +
                 "postId='" + postId + '\'' +
                 ", title='" + title + '\'' +
@@ -55,6 +27,6 @@ public class PostModelClassForRV implements Serializable {
                 ", datePosted='" + datePosted + '\'' +
                 ", timePosted='" + timePosted + '\'' +
                 ", postImageUri='" + postImageUri + '\'' +
-                '}';
+                '}'
     }
 }

@@ -1,113 +1,107 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.os.Bundle;
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.adapter.ExploreParentRVAdapter
+import com.hrithikvish.cbsm.databinding.FragmentExploreBinding
+import com.hrithikvish.cbsm.model.ParentItemModelClassForRV
+import com.hrithikvish.cbsm.model.PostModelClassForRV
+import java.util.Collections
+import java.util.Locale
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+class ExploreFragment : Fragment() {
+    var binding: FragmentExploreBinding? = null
+    var databaseReference: DatabaseReference? = null
+    var auth: FirebaseAuth? = null
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+    var collegesListMain: ArrayList<ParentItemModelClassForRV>? = null
+    var parentRVAdapter: ExploreParentRVAdapter? = null
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.adapter.ExploreParentRVAdapter;
-import com.hrithikvish.cbsm.databinding.FragmentExploreBinding;
-import com.hrithikvish.cbsm.model.ParentItemModelClassForRV;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentExploreBinding.inflate(layoutInflater, container, false)
 
-import java.util.ArrayList;
-import java.util.Collections;
+        databaseReference = FirebaseDatabase.getInstance().reference
+        auth = FirebaseAuth.getInstance()
 
-public class ExploreFragment extends Fragment {
+        collegesListMain = ArrayList()
 
-    FragmentExploreBinding binding;
-    DatabaseReference databaseReference;
-    FirebaseAuth auth;
+        databaseReference!!.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val collegesList =
+                    snapshot.child("Colleges").child("collegesList").value as ArrayList<String>?
+                println(collegesList)
 
-    ArrayList<ParentItemModelClassForRV> collegesListMain;
-    ExploreParentRVAdapter parentRVAdapter;
+                for (i in collegesList!!.indices) {
+                    val tempPostList = snapshot.child("Colleges").child("collegesPost")
+                        .child(i.toString()).value as ArrayList<String>?
+                    println(tempPostList)
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentExploreBinding.inflate(getLayoutInflater(), container, false);
-
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        auth = FirebaseAuth.getInstance();
-
-        collegesListMain = new ArrayList<>();
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                ArrayList<String> collegesList = (ArrayList<String>) snapshot.child("Colleges").child("collegesList").getValue();
-                System.out.println(collegesList);
-
-                for(int i = 0; i < collegesList.size(); i++) {
-
-                    ArrayList<String> tempPostList = (ArrayList<String>) snapshot.child("Colleges").child("collegesPost").child(String.valueOf(i)).getValue();
-                    System.out.println(tempPostList);
-
-                    if(tempPostList == null) {
-                        continue;
+                    if (tempPostList == null) {
+                        continue
                     }
 
-                    ArrayList<PostModelClassForRV> postList = new ArrayList<>();
-                    for(String post : tempPostList) {
-                        PostModelClassForRV postClass = snapshot.child("Posts").child(post).getValue(PostModelClassForRV.class);
-                        postList.add(postClass);
+                    val postList = ArrayList<PostModelClassForRV?>()
+                    for (post in tempPostList) {
+                        val postClass = snapshot.child("Posts").child(post).getValue(
+                            PostModelClassForRV::class.java
+                        )
+                        postList.add(postClass)
                     }
-                    Collections.reverse(postList);
-                    collegesListMain.add(new ParentItemModelClassForRV(collegesList.get(i), postList));
-
+                    Collections.reverse(postList)
+                    collegesListMain!!.add(ParentItemModelClassForRV(collegesList[i], postList))
                 }
-                parentRVAdapter = new ExploreParentRVAdapter(getContext(), collegesListMain);
-                binding.parentRV.setHasFixedSize(true);
-                binding.parentRV.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                binding.parentRV.setAdapter(parentRVAdapter);
-                parentRVAdapter.notifyDataSetChanged();
-                binding.progressBar.setVisibility(View.INVISIBLE);
+                parentRVAdapter = ExploreParentRVAdapter(context, collegesListMain)
+                binding!!.parentRV.setHasFixedSize(true)
+                binding!!.parentRV.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding!!.parentRV.adapter = parentRVAdapter
+                parentRVAdapter!!.notifyDataSetChanged()
+                binding!!.progressBar.visibility = View.INVISIBLE
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
+            override fun onCancelled(error: DatabaseError) {}
+        })
 
-        binding.searchBar.addTextChangedListener(new TextWatcher() {
+        binding!!.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
 
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) { }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if(editable.toString().isEmpty()) {
-                    parentRVAdapter.filterList(collegesListMain);
+            override fun afterTextChanged(editable: Editable) {
+                if (editable.toString().isEmpty()) {
+                    parentRVAdapter!!.filterList(collegesListMain!!)
                 }
-                ArrayList<ParentItemModelClassForRV> filteredList = new ArrayList<>();
-                for(ParentItemModelClassForRV post : collegesListMain) {
-                    if(post.getCollegeName().toLowerCase().contains(editable.toString().toLowerCase())) {
-                        filteredList.add(post);
+                val filteredList = ArrayList<ParentItemModelClassForRV>()
+                for (post in collegesListMain!!) {
+                    if (post.collegeName!!.lowercase(Locale.getDefault()).contains(
+                            editable.toString().lowercase(
+                                Locale.getDefault()
+                            )
+                        )
+                    ) {
+                        filteredList.add(post)
                     }
                 }
-                parentRVAdapter.filterList(filteredList);
+                parentRVAdapter!!.filterList(filteredList)
             }
-        });
+        })
 
         //
-        return binding.getRoot();
+        return binding!!.root
     }
 }

@@ -1,194 +1,216 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.material.button.MaterialButton
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.databinding.ActivityLoginBinding
+import com.hrithikvish.cbsm.utils.Constants
+import com.hrithikvish.cbsm.utils.SharedPrefManager
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+class LoginActivity : AppCompatActivity() {
+    var binding: ActivityLoginBinding? = null
+    var sharedPrefManager: SharedPrefManager? = null
+    var auth: FirebaseAuth? = null
+    var googleSignInClient: GoogleSignInClient? = null
+    var googleSignInBtn: MaterialButton? = null
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.databinding.ActivityLoginBinding;
-import com.hrithikvish.cbsm.utils.Constants;
-import com.hrithikvish.cbsm.utils.SharedPrefManager;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
 
-public class LoginActivity extends AppCompatActivity {
+        auth = FirebaseAuth.getInstance()
+        FirebaseApp.initializeApp(this)
+        sharedPrefManager = SharedPrefManager(this@LoginActivity)
 
-    ActivityLoginBinding binding;
-    SharedPrefManager sharedPrefManager;
-    FirebaseAuth auth;
-    GoogleSignInClient googleSignInClient;
-    MaterialButton googleSignInBtn;
+        googleSignInBtn = binding!!.googleSignIn as MaterialButton
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        val options =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(
+                Constants.CLIENT_ID
+            ).requestEmail().build()
+        googleSignInClient = GoogleSignIn.getClient(this, options)
 
-        auth = FirebaseAuth.getInstance();
-        FirebaseApp.initializeApp(this);
-        sharedPrefManager = new SharedPrefManager(LoginActivity.this);
-
-        googleSignInBtn = (MaterialButton) binding.googleSignIn;
-
-        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, options);
-
-        binding.loginBtn.setOnClickListener(view-> {
-            changeLoginBtnToProgBar(true);
-            String email = binding.emailET.getText().toString();
-            String pass = binding.passET.getText().toString();
-            if(!email.isEmpty() && !pass.isEmpty()) {
-                signInUsingEmailPass(email, pass);
+        binding!!.loginBtn.setOnClickListener { view: View? ->
+            changeLoginBtnToProgBar(true)
+            val email = binding!!.emailET.text.toString()
+            val pass = binding!!.passET.text.toString()
+            if (!email.isEmpty() && !pass.isEmpty()) {
+                signInUsingEmailPass(email, pass)
             } else {
                 if (email.isEmpty()) {
-                    binding.emailET.setError("Enter Email");
+                    binding!!.emailET.error = "Enter Email"
                 }
                 if (pass.isEmpty()) {
-                    binding.passET.setError("Enter Password");
+                    binding!!.passET.error = "Enter Password"
                 }
-                changeLoginBtnToProgBar(false);
+                changeLoginBtnToProgBar(false)
             }
-        });
+        }
 
-        binding.googleSignIn.setOnClickListener(view -> {
-            changeGoogleRegBtnToLoading(true);
-            Intent signInIntent = googleSignInClient.getSignInIntent();
-            activityResultLauncher.launch(signInIntent);
-        });
+        binding!!.googleSignIn.setOnClickListener { view: View? ->
+            changeGoogleRegBtnToLoading(true)
+            val signInIntent = googleSignInClient!!.signInIntent
+            activityResultLauncher.launch(signInIntent)
+        }
 
-        binding.goToSignUpPageText.setOnClickListener(view-> {
-            startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
-            finish();
-        });
+        binding!!.goToSignUpPageText.setOnClickListener { view: View? ->
+            startActivity(
+                Intent(
+                    this@LoginActivity,
+                    SignUpActivity::class.java
+                )
+            )
+            finish()
+        }
 
-        binding.forgotPassText.setOnClickListener(view-> {
-            startActivity(new Intent(LoginActivity.this, ForgotPassActivity.class));
-        });
-
+        binding!!.forgotPassText.setOnClickListener { view: View? ->
+            startActivity(
+                Intent(
+                    this@LoginActivity,
+                    ForgotPassActivity::class.java
+                )
+            )
+        }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        changeLoginBtnToProgBar(false);
-        changeGoogleRegBtnToLoading(false);
+    override fun onStop() {
+        super.onStop()
+        changeLoginBtnToProgBar(false)
+        changeGoogleRegBtnToLoading(false)
     }
 
-    private void signInUsingEmailPass(String email, String pass) {
-        auth = FirebaseAuth.getInstance();
-        auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
-                    sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    changeLoginBtnToProgBar(false);
-                }
+    private fun signInUsingEmailPass(email: String, pass: String) {
+        auth = FirebaseAuth.getInstance()
+        auth!!.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                sharedPrefManager!!.putBoolean(
+                    Constants.LOGIN_SESSION_SHARED_PREF_KEY,
+                    true
+                )
+                val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(
+                    this@LoginActivity,
+                    task.exception!!.localizedMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+                changeLoginBtnToProgBar(false)
             }
-        });
+        }
     }
 
-    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult o) {
-            if(o.getResultCode() == RESULT_OK) {
-                Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(o.getData());
-                try {
-                    GoogleSignInAccount googleSignInAccount = accountTask.getResult(ApiException.class);
-                    AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-                    auth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()) {
-                                String uid = auth.getUid();
-                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if(!snapshot.child("Users").child(uid).child("clg").exists()) {
-                                            Toast.makeText(LoginActivity.this, "User Not Found, Sign Up", Toast.LENGTH_LONG).show();
-                                            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
-                                            googleSignInClient = GoogleSignIn.getClient(LoginActivity.this, gso);
-                                            googleSignInClient.signOut();
-                                            changeGoogleRegBtnToLoading(false);
-                                        } else {
-                                            sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
-                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {}
-                                });
-
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Login Failed, Try Again!", Toast.LENGTH_SHORT).show();
-                                changeGoogleRegBtnToLoading(false);
+    private val activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
+        ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        if (activityResult.resultCode == RESULT_OK) {
+            val accountTask = GoogleSignIn.getSignedInAccountFromIntent(activityResult.data)
+            try {
+                val googleSignInAccount = accountTask.getResult(
+                    ApiException::class.java
+                )
+                val authCredential =
+                    GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
+                auth!!.signInWithCredential(authCredential).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val uid = auth!!.uid
+                        val databaseReference = FirebaseDatabase.getInstance().reference
+                        databaseReference.addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (!snapshot.child("Users").child(uid!!).child("clg")
+                                        .exists()
+                                ) {
+                                    Toast.makeText(
+                                        this@LoginActivity,
+                                        "User Not Found, Sign Up",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    val gso =
+                                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                            .requestIdToken(Constants.CLIENT_ID)
+                                            .requestEmail().build()
+                                    googleSignInClient = GoogleSignIn.getClient(
+                                        this@LoginActivity,
+                                        gso
+                                    )
+                                    googleSignInClient!!.signOut()
+                                    changeGoogleRegBtnToLoading(false)
+                                } else {
+                                    sharedPrefManager!!.putBoolean(
+                                        Constants.LOGIN_SESSION_SHARED_PREF_KEY,
+                                        true
+                                    )
+                                    val intent = Intent(
+                                        this@LoginActivity,
+                                        HomeActivity::class.java
+                                    )
+                                    startActivity(intent)
+                                    finish()
+                                }
                             }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d("FAILURE", e.getLocalizedMessage());
-                        }
-                    });
-                } catch (ApiException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-    });
 
-    private void changeLoginBtnToProgBar(Boolean isLoading) {
-        if(isLoading) {
-            binding.loginBtn.setText("");
-            binding.progressBar.setVisibility(View.VISIBLE);
-        } else {
-            binding.loginBtn.setText("Login");
-            binding.progressBar.setVisibility(View.GONE);
+                            override fun onCancelled(error: DatabaseError) {}
+                        })
+                    } else {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Login Failed, Try Again!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        changeGoogleRegBtnToLoading(false)
+                    }
+                }.addOnFailureListener { e ->
+                    Log.d(
+                        "FAILURE",
+                        e.localizedMessage
+                    )
+                }
+            } catch (e: ApiException) {
+                throw RuntimeException(e)
+            }
         }
     }
 
-    private void changeGoogleRegBtnToLoading(Boolean isLoading) {
-        if(isLoading) {
-            binding.googleSignIn.setText("");
-            googleSignInBtn.setIcon(null);
-            binding.googleBar.setVisibility(View.VISIBLE);
+    private fun changeLoginBtnToProgBar(isLoading: Boolean) {
+        if (isLoading) {
+            binding!!.loginBtn.text = ""
+            binding!!.progressBar.visibility = View.VISIBLE
         } else {
-            binding.googleBar.setVisibility(View.GONE);
-            googleSignInBtn.setIconResource(R.drawable.icon_google);
-            binding.googleSignIn.setText("Continue to Google");
+            binding!!.loginBtn.text = "Login"
+            binding!!.progressBar.visibility = View.GONE
+        }
+    }
+
+    private fun changeGoogleRegBtnToLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding!!.googleSignIn.text = ""
+            googleSignInBtn!!.icon = null
+            binding!!.googleBar.visibility = View.VISIBLE
+        } else {
+            binding!!.googleBar.visibility = View.GONE
+            googleSignInBtn!!.setIconResource(R.drawable.icon_google)
+            binding!!.googleSignIn.text = "Continue to Google"
         }
     }
 }

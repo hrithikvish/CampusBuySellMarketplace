@@ -1,36 +1,30 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.hrithikvish.cbsm.utils.Constants
+import com.hrithikvish.cbsm.utils.SharedPrefManager
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
+class SplashActivity : AppCompatActivity() {
+    var sharedPrefManager: SharedPrefManager? = null
 
-import com.hrithikvish.cbsm.utils.Constants;
-import com.hrithikvish.cbsm.utils.SharedPrefManager;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        installSplashScreen()
+        setContentView(R.layout.activity_splash)
 
-public class SplashActivity extends AppCompatActivity {
+        sharedPrefManager = SharedPrefManager(this@SplashActivity)
 
-    SharedPrefManager sharedPrefManager;
+        val isLoggedIn = sharedPrefManager!!.getBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        SplashScreen.installSplashScreen(this);
-        setContentView(R.layout.activity_splash);
-
-        sharedPrefManager = new SharedPrefManager(SplashActivity.this);
-
-        boolean isLoggedIn = sharedPrefManager.getBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY);
-
-        if(isLoggedIn) {
-            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+        if (isLoggedIn) {
+            startActivity(Intent(this@SplashActivity, HomeActivity::class.java))
         } else {
-            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
         }
 
-        finish();
-
+        finish()
     }
 }

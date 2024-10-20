@@ -1,61 +1,62 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.hrithikvish.cbsm.databinding.ActivityForgotPassBinding
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
+class ForgotPassActivity : AppCompatActivity() {
+    var binding: ActivityForgotPassBinding? = null
+    var auth: FirebaseAuth? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityForgotPassBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.hrithikvish.cbsm.databinding.ActivityForgotPassBinding;
+        auth = FirebaseAuth.getInstance()
 
-public class ForgotPassActivity extends AppCompatActivity {
+        binding!!.backBtn.setOnClickListener { view: View? ->
+            finish()
+        }
 
-    ActivityForgotPassBinding binding;
-    FirebaseAuth auth;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityForgotPassBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        auth = FirebaseAuth.getInstance();
-
-        binding.backBtn.setOnClickListener(view-> {
-            finish();
-        });
-
-        binding.resetPassBtn.setOnClickListener(view-> {
-            String resetEmail = binding.emailET.getText().toString().trim();
-            if(!resetEmail.isEmpty()) {
-                changeResetPassBtnToProgBar(true);
-                auth.sendPasswordResetEmail(resetEmail).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        changeResetPassBtnToProgBar(false);
-                        Toast.makeText(ForgotPassActivity.this, "Email sent to " + resetEmail, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ForgotPassActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                        changeResetPassBtnToProgBar(false);
+        binding!!.resetPassBtn.setOnClickListener { view: View? ->
+            val resetEmail = binding!!.emailET.text.toString().trim { it <= ' ' }
+            if (!resetEmail.isEmpty()) {
+                changeResetPassBtnToProgBar(true)
+                auth!!.sendPasswordResetEmail(resetEmail)
+                    .addOnCompleteListener { task: Task<Void?> ->
+                        if (task.isSuccessful) {
+                            changeResetPassBtnToProgBar(false)
+                            Toast.makeText(
+                                this@ForgotPassActivity,
+                                "Email sent to $resetEmail", Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@ForgotPassActivity,
+                                task.exception!!.localizedMessage,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            changeResetPassBtnToProgBar(false)
+                        }
                     }
-                });
             } else {
-                binding.emailET.setError("Enter Email Address");
-                changeResetPassBtnToProgBar(false);
+                binding!!.emailET.error = "Enter Email Address"
+                changeResetPassBtnToProgBar(false)
             }
-        });
-    }
-
-    private void changeResetPassBtnToProgBar(Boolean isLoading) {
-        if(isLoading) {
-            binding.resetPassBtn.setText("");
-            binding.progressBar.setVisibility(View.VISIBLE);
-        } else {
-            binding.resetPassBtn.setText("Reset Password");
-            binding.progressBar.setVisibility(View.GONE);
         }
     }
 
+    private fun changeResetPassBtnToProgBar(isLoading: Boolean) {
+        if (isLoading) {
+            binding!!.resetPassBtn.text = ""
+            binding!!.progressBar.visibility = View.VISIBLE
+        } else {
+            binding!!.resetPassBtn.text = "Reset Password"
+            binding!!.progressBar.visibility = View.GONE
+        }
+    }
 }

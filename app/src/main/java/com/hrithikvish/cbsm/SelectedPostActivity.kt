@@ -1,219 +1,224 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.databinding.ActivitySelectedPostBinding
+import com.hrithikvish.cbsm.model.PostModelClassForRV
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+class SelectedPostActivity : AppCompatActivity() {
+    var binding: ActivitySelectedPostBinding? = null
+    var databaseReference: DatabaseReference? = null
+    var auth: FirebaseAuth? = null
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.databinding.ActivitySelectedPostBinding;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
-import com.hrithikvish.cbsm.utils.Constants;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySelectedPostBinding.inflate(
+            layoutInflater
+        )
+        setContentView(binding!!.root)
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+        databaseReference = FirebaseDatabase.getInstance().reference
+        auth = FirebaseAuth.getInstance()
+        val selectedItem = intent.getSerializableExtra("selectedPost") as PostModelClassForRV?
 
-public class SelectedPostActivity extends AppCompatActivity {
-
-    ActivitySelectedPostBinding binding;
-    DatabaseReference databaseReference;
-    FirebaseAuth auth;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivitySelectedPostBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        auth = FirebaseAuth.getInstance();
-        PostModelClassForRV selectedItem = (PostModelClassForRV) getIntent().getSerializableExtra("selectedPost");
-
-        binding.backArrow.setOnClickListener(view-> finish());
-        if(selectedItem.getUser().equals(auth.getCurrentUser().getUid())) {
-            binding.deleteBtn.setVisibility(View.VISIBLE);
+        binding!!.backArrow.setOnClickListener { view: View? -> finish() }
+        if (selectedItem!!.user == auth!!.currentUser!!.uid) {
+            binding!!.deleteBtn.visibility = View.VISIBLE
         }
-        binding.deleteBtn.setOnClickListener(view-> {
-            Toast.makeText(this, "Delete CLicked", Toast.LENGTH_SHORT).show();
-        });
+        binding!!.deleteBtn.setOnClickListener { view: View? ->
+            Toast.makeText(this, "Delete CLicked", Toast.LENGTH_SHORT).show()
+        }
 
         Glide.with(this)
-                .load(selectedItem.getPostImageUri())
-                .error(R.drawable.noimage)
-                .into(binding.image);
+            .load(selectedItem.postImageUri)
+            .error(R.drawable.noimage)
+            .into(binding!!.image)
 
-        if(selectedItem.getBody().isEmpty()) {
-            binding.desc.setText("No Description Available");
+        if (selectedItem.body!!.isEmpty()) {
+            binding!!.desc.text = "No Description Available"
         } else {
-            binding.desc.setText(selectedItem.getBody());
+            binding!!.desc.text = selectedItem.body
         }
 
-        if(selectedItem.getTitle().isEmpty()) {
-            binding.desc.setText("No Title Available");
+        if (selectedItem.title!!.isEmpty()) {
+            binding!!.desc.text = "No Title Available"
         } else {
-            binding.title.setText(selectedItem.getTitle());
+            binding!!.title.text = selectedItem.title
         }
-        binding.timePosted.setText(selectedItem.getTimePosted());
-        binding.datePosted.setText(selectedItem.getDatePosted());
-        binding.deleteBtn.setOnClickListener(view-> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Are you sure, you want to Delete this Item?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    finish();
-                    databaseReference.child("Posts").child(selectedItem.getPostId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        List<String> list = (List<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
-                                        list.remove(selectedItem.getPostId());
-                                        databaseReference.child("Users").child(auth.getUid()).child("userPosts").setValue(list);
-                                    }
+        binding!!.timePosted.text = selectedItem.timePosted
+        binding!!.datePosted.text = selectedItem.datePosted
+        binding!!.deleteBtn.setOnClickListener { view: View? ->
+            val builder =
+                AlertDialog.Builder(this)
+            builder.setMessage("Are you sure, you want to Delete this Item?")
+            builder.setPositiveButton(
+                "Yes"
+            ) { dialogInterface, i ->
+                finish()
+                databaseReference!!.child("Posts").child(selectedItem.postId!!).removeValue()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            databaseReference!!.addListenerForSingleValueEvent(object :
+                                ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    val list =
+                                        snapshot.child("Users").child(
+                                            auth!!.uid!!
+                                        )
+                                            .child("userPosts").value as MutableList<String>?
+                                    list!!.remove(selectedItem.postId)
+                                    databaseReference!!.child("Users").child(auth!!.uid!!)
+                                        .child("userPosts").setValue(list)
+                                }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) { }
-                                });
+                                override fun onCancelled(error: DatabaseError) {}
+                            })
 
-                                Toast.makeText(getApplicationContext(), "Item Delisted", Toast.LENGTH_SHORT).show();
-                            }
+                            Toast.makeText(
+                                applicationContext,
+                                "Item Delisted",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    });
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {}
-            });
+                    }
+            }
+            builder.setNegativeButton(
+                "Cancel"
+            ) { dialogInterface, i -> }
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        });
+            val dialog = builder.create()
+            dialog.show()
+        }
 
         //college
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                binding.college.setText(snapshot.child("Users").child(selectedItem.getUser()).child("clg").getValue().toString());
-                Object name = snapshot.child("Users").child(selectedItem.getUser()).child("name").getValue();
-                if(name != null) {
-                    binding.posterName.setText(name.toString());
-                } else {binding.posterName.setText(snapshot.child("Users").child(selectedItem.getUser()).child("email").getValue().toString());
+        databaseReference!!.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                binding!!.college.text =
+                    snapshot.child("Users").child(selectedItem.user!!).child("clg").value.toString()
+                val name = snapshot.child("Users").child(selectedItem.user!!).child("name").value
+                if (name != null) {
+                    binding!!.posterName.text = name.toString()
+                } else {
+                    binding!!.posterName.text =
+                        snapshot.child("Users").child(selectedItem.user!!)
+                            .child("email").value.toString()
                 }
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
 
-        binding.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        binding.imgCard.setOnClickListener(view-> {
-            if(binding.image.getScaleType() == ImageView.ScaleType.CENTER_CROP) {
-                binding.image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        binding!!.image.scaleType = ImageView.ScaleType.CENTER_CROP
+        binding!!.imgCard.setOnClickListener { view: View? ->
+            if (binding!!.image.scaleType == ImageView.ScaleType.CENTER_CROP) {
+                binding!!.image.scaleType = ImageView.ScaleType.FIT_CENTER
             } else {
-                binding.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                binding!!.image.scaleType = ImageView.ScaleType.CENTER_CROP
             }
-            binding.image.invalidate();
-        });
+            binding!!.image.invalidate()
+        }
 
-        binding.chatBtn.setOnClickListener(view -> {
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String mail = (String) snapshot.child("Users").child(selectedItem.getUser()).child("email").getValue();
-                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                intent.setData(Uri.parse("mailto:"+mail));
-                startActivity(intent);
-            }
+        binding!!.chatBtn.setOnClickListener { view: View? ->
+            databaseReference!!.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val mail = snapshot.child("Users").child(selectedItem.user!!)
+                        .child("email").value as String?
+                    val intent = Intent(Intent.ACTION_SENDTO)
+                    intent.setData(Uri.parse("mailto:$mail"))
+                    startActivity(intent)
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
-        });
+                override fun onCancelled(error: DatabaseError) {}
+            })
+        }
 
         //setting save btn as unsave btn if alreasy saved
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<String> savedPostList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
+        databaseReference!!.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val savedPostList = snapshot.child("Users").child(
+                    auth!!.uid!!
+                ).child("savedPosts").value as ArrayList<String>?
 
-                if(savedPostList != null) {
-                    if(savedPostList.contains(selectedItem.getPostId())) {
-                        binding.saveBtn.setText("Unsave");
+                if (savedPostList != null) {
+                    if (savedPostList.contains(selectedItem.postId)) {
+                        binding!!.saveBtn.text = "Unsave"
                     }
                 }
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
-        binding.saveBtn.setOnClickListener(view -> {
-            HashMap<String, Object> savedPostsMap = new HashMap<>();
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    ArrayList<String> savedPostList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
 
-                    boolean removedTemp = false;
+            override fun onCancelled(error: DatabaseError) {}
+        })
+        binding!!.saveBtn.setOnClickListener { view: View? ->
+            val savedPostsMap =
+                HashMap<String, Any>()
+            databaseReference!!.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var savedPostList =
+                        snapshot.child("Users").child(
+                            auth!!.uid!!
+                        ).child("savedPosts").value as ArrayList<String?>?
 
-                    if(savedPostList != null) {
-                        if(!savedPostList.contains(selectedItem.getPostId())) {
-                            savedPostList.add(selectedItem.getPostId());
-                            savedPostsMap.put("savedPosts", savedPostList);
-                        } else if(savedPostList.contains(selectedItem.getPostId())) {
-                            savedPostList.remove(selectedItem.getPostId());
-                            removedTemp = true;
-                            savedPostsMap.put("savedPosts", savedPostList);
+                    var removedTemp = false
+
+                    if (savedPostList != null) {
+                        if (!savedPostList.contains(selectedItem.postId)) {
+                            savedPostList.add(selectedItem.postId)
+                            savedPostsMap["savedPosts"] = savedPostList
+                        } else if (savedPostList.contains(selectedItem.postId)) {
+                            savedPostList.remove(selectedItem.postId)
+                            removedTemp = true
+                            savedPostsMap["savedPosts"] = savedPostList
                         }
                     } else {
-                        savedPostList = new ArrayList<>();
-                        savedPostList.add(selectedItem.getPostId());
-                        savedPostsMap.put("savedPosts", savedPostList);
+                        savedPostList = ArrayList()
+                        savedPostList.add(selectedItem.postId)
+                        savedPostsMap["savedPosts"] = savedPostList
                     }
-                    boolean removed = removedTemp;
-                    databaseReference.child("Users").child(auth.getUid()).updateChildren(savedPostsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                if(removed) {
-                                    Toast.makeText(getApplicationContext(), "Post removed from Saved", Toast.LENGTH_SHORT).show();
-                                    binding.saveBtn.setText("Save");
+                    val removed = removedTemp
+                    databaseReference!!.child("Users").child(auth!!.uid!!)
+                        .updateChildren(savedPostsMap)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                if (removed) {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Post removed from Saved",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    binding!!.saveBtn.text = "Save"
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Post Saved", Toast.LENGTH_SHORT).show();
-                                    binding.saveBtn.setText("Unsave");
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Post Saved",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    binding!!.saveBtn.text = "Unsave"
                                 }
                             } else {
-                                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Something went wrong",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
-                    });
                 }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) { }
-            });
-        });
-
+                override fun onCancelled(error: DatabaseError) {}
+            })
+        }
     }
 }

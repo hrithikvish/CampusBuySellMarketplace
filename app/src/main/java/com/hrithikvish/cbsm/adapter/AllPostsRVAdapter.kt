@@ -1,119 +1,98 @@
-package com.hrithikvish.cbsm.adapter;
+package com.hrithikvish.cbsm.adapter
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Parcelable;
-import android.util.Log;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.R
+import com.hrithikvish.cbsm.SelectedPostActivity
+import com.hrithikvish.cbsm.adapter.AllPostsRVAdapter.postsRVViewHolder
+import com.hrithikvish.cbsm.model.PostModelClassForRV
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class AllPostsRVAdapter(var context: Context?, var postList: ArrayList<PostModelClassForRV>?) :
+    RecyclerView.Adapter<postsRVViewHolder>() {
+    var auth: FirebaseAuth = FirebaseAuth.getInstance()
+    var databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.SelectedPostActivity;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
-import com.hrithikvish.cbsm.R;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.postsRVViewHolder> {
-
-    Context context;
-    ArrayList<PostModelClassForRV> postList;
-
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
-    public AllPostsRVAdapter(Context context, ArrayList<PostModelClassForRV> postList) {
-        this.context = context;
-        this.postList = postList;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): postsRVViewHolder {
+        val view =
+            LayoutInflater.from(context).inflate(R.layout.all_posts_item_card_view, parent, false)
+        return postsRVViewHolder(view)
     }
 
-    @NonNull
-    @Override
-    public postsRVViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.all_posts_item_card_view, parent, false);
-        return new postsRVViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull postsRVViewHolder holder, int position) {
-        PostModelClassForRV post = postList.get(position);
-        if(post.getTitle().isEmpty()) {
-            holder.postTitle.setText("No Title Available");
+    override fun onBindViewHolder(holder: postsRVViewHolder, position: Int) {
+        val post = postList!![position]
+        if (post.title!!.isEmpty()) {
+            holder.postTitle.text = "No Title Available"
         } else {
-            holder.postTitle.setText(post.getTitle());
+            holder.postTitle.text = post.title
         }
 
-        Glide.with(context)
-                .load(post.getPostImageUri())
-                .error(R.drawable.noimage2)
-                .into(holder.postImage);
+        Glide.with(context!!)
+            .load(post.postImageUri)
+            .error(R.drawable.noimage2)
+            .into(holder.postImage)
 
-        holder.datePosted.setText(post.getDatePosted());
-        holder.timePosted.setText(post.getTimePosted());
-        if(post.getBody().isEmpty()) {
-            holder.postBody.setText("No Description Available");
+        holder.datePosted.text = post.datePosted
+        holder.timePosted.text = post.timePosted
+        if (post.body!!.isEmpty()) {
+            holder.postBody.text = "No Description Available"
         } else {
-            holder.postBody.setText(post.getBody());
+            holder.postBody.text = post.body
         }
         //setting college name
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                holder.clg.setText(snapshot.child("Users").child(post.getUser()).child("clg").getValue().toString());
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                holder.clg.text =
+                    snapshot.child("Users").child(post.user!!).child("clg").value.toString()
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
 
-        holder.threeDot.setOnClickListener(view -> {
-            PopupMenu popup = new PopupMenu(context, holder.threeDot);
-            popup.inflate(R.menu.all_posts_item_three_dot_items);
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        holder.threeDot.setOnClickListener { view: View? ->
+            val popup = PopupMenu(
+                context, holder.threeDot
+            )
+            popup.inflate(R.menu.all_posts_item_three_dot_items)
             //dynamicallyShowOrHideDeletePostItem(post, popup);
-            dynamicallySetPopMenuSavePostItem(post, popup);
-            handlePopupAndClicks(popup, context, post);
-            popup.show();
-        });
+            dynamicallySetPopMenuSavePostItem(post, popup)
+            handlePopupAndClicks(popup, context!!, post)
+            popup.show()
+        }
 
-        holder.itemView.setOnLongClickListener(view -> {
-            PopupMenu popup = new PopupMenu(context, holder.threeDot);
-            popup.inflate(R.menu.all_posts_item_three_dot_items);
+        holder.itemView.setOnLongClickListener { view: View? ->
+            val popup = PopupMenu(
+                context, holder.threeDot
+            )
+            popup.inflate(R.menu.all_posts_item_three_dot_items)
             //dynamicallyShowOrHideDeletePostItem(post, popup);
-            dynamicallySetPopMenuSavePostItem(post, popup);
-            handlePopupAndClicks(popup, context, post);
-            return true;
-        });
+            dynamicallySetPopMenuSavePostItem(post, popup)
+            handlePopupAndClicks(popup, context!!, post)
+            true
+        }
 
-        holder.itemView.setOnClickListener(view-> {
-            PostModelClassForRV selectedPost = postList.get(position);
-            Intent intent = new Intent(context, SelectedPostActivity.class);
-            intent.putExtra("selectedPost", selectedPost);
-            context.startActivity(intent);
-        });
-
+        holder.itemView.setOnClickListener { view: View? ->
+            val selectedPost = postList!![position]
+            val intent = Intent(context, SelectedPostActivity::class.java)
+            intent.putExtra("selectedPost", selectedPost)
+            context!!.startActivity(intent)
+        }
     }
 
     /*private void dynamicallyShowOrHideDeletePostItem(PostModelClassForRV post, PopupMenu popup) {
@@ -134,103 +113,111 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
             public void onCancelled(@NonNull DatabaseError error) { }
         });
     }*/
-        public void filterList(ArrayList<PostModelClassForRV> filteredList) {
-            postList = filteredList;
-            notifyDataSetChanged();
-        }
+    fun filterList(filteredList: ArrayList<PostModelClassForRV>?) {
+        postList = filteredList!!
+        notifyDataSetChanged()
+    }
 
-    private void dynamicallySetPopMenuSavePostItem(PostModelClassForRV post, PopupMenu popup) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<String> savedPostList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
+    private fun dynamicallySetPopMenuSavePostItem(post: PostModelClassForRV, popup: PopupMenu) {
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val savedPostList = snapshot.child("Users").child(
+                    auth.uid!!
+                ).child("savedPosts").value as ArrayList<String?>?
 
-                if(savedPostList != null) {
-                    if(savedPostList.contains(post.getPostId())) {
-                        MenuItem menuItem = popup.getMenu().findItem(R.id.save);
-                        menuItem.setTitle("Unsave Item");
+                if (savedPostList != null) {
+                    if (savedPostList.contains(post.postId)) {
+                        val menuItem = popup.menu.findItem(R.id.save)
+                        menuItem.setTitle("Unsave Item")
                     }
                 }
-                popup.show();
+                popup.show()
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
-    private void handlePopupAndClicks(PopupMenu popup, Context context, PostModelClassForRV post) {
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.save) {
+    private fun handlePopupAndClicks(
+        popup: PopupMenu,
+        context: Context,
+        post: PostModelClassForRV
+    ) {
+        popup.setOnMenuItemClickListener { item ->
+            val id = item.itemId
+            if (id == R.id.save) {
+                val savedPostsMap = HashMap<String, Any>()
+                databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        var savedPostList = snapshot.child("Users").child(
+                            auth.uid!!
+                        ).child("savedPosts").value as ArrayList<String?>?
 
-                    HashMap<String, Object> savedPostsMap = new HashMap<>();
-                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            ArrayList<String> savedPostList = (ArrayList<String>) snapshot.child("Users").child(auth.getUid()).child("savedPosts").getValue();
+                        var removedTemp = false
 
-                            boolean removedTemp = false;
-
-                            if(savedPostList != null) {
-                                if(!savedPostList.contains(post.getPostId())) {
-                                    savedPostList.add(post.getPostId());
-                                    savedPostsMap.put("savedPosts", savedPostList);
-                                } else if(savedPostList.contains(post.getPostId())) {
-                                    savedPostList.remove(post.getPostId());
-                                    removedTemp = true;
-                                    savedPostsMap.put("savedPosts", savedPostList);
-                                }
-                            } else {
-                                savedPostList = new ArrayList<>();
-                                savedPostList.add(post.getPostId());
-                                savedPostsMap.put("savedPosts", savedPostList);
+                        if (savedPostList != null) {
+                            if (!savedPostList.contains(post.postId)) {
+                                savedPostList.add(post.postId)
+                                savedPostsMap["savedPosts"] = savedPostList
+                            } else if (savedPostList.contains(post.postId)) {
+                                savedPostList.remove(post.postId)
+                                removedTemp = true
+                                savedPostsMap["savedPosts"] = savedPostList
                             }
-                            boolean removed = removedTemp;
-                            databaseReference.child("Users").child(auth.getUid()).updateChildren(savedPostsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()) {
-                                        if(removed) {
-                                            Toast.makeText(context, "Post removed from Saved", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(context, "Post Saved", Toast.LENGTH_SHORT).show();
-                                        }
+                        } else {
+                            savedPostList = ArrayList()
+                            savedPostList.add(post.postId)
+                            savedPostsMap["savedPosts"] = savedPostList
+                        }
+                        val removed = removedTemp
+                        databaseReference.child("Users").child(auth.uid!!)
+                            .updateChildren(savedPostsMap).addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    if (removed) {
+                                        Toast.makeText(
+                                            context,
+                                            "Post removed from Saved",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     } else {
-                                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(
+                                            context,
+                                            "Post Saved",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Something went wrong",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                            });
-                        }
+                            }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) { }
-                    });
-                }
-                else {
-                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String mail = (String) snapshot.child("Users").child(post.getUser()).child("email").getValue();
-                            Log.d("MAIL", mail);
-                            Intent intent = new Intent(Intent.ACTION_SENDTO);
-                            intent.setData(Uri.parse("mailto:"+mail));
-                            context.startActivity(intent);
-                        }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+            } else {
+                databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val mail = snapshot.child("Users").child(post.user!!)
+                            .child("email").value as String?
+                        Log.d("MAIL", mail!!)
+                        val intent = Intent(Intent.ACTION_SENDTO)
+                        intent.setData(Uri.parse("mailto:$mail"))
+                        context.startActivity(intent)
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) { }
-                    });
-                }
-                return true;
+                    override fun onCancelled(error: DatabaseError) {}
+                })
             }
-        });
+            true
+        }
     }
 
-    @Override
-    public int getItemCount() {
-        return postList.size();
+    override fun getItemCount(): Int {
+        return postList!!.size
     }
 
     /*@Override
@@ -260,20 +247,14 @@ public class AllPostsRVAdapter extends RecyclerView.Adapter<AllPostsRVAdapter.po
             }
         };
     }*/
-
-    public class postsRVViewHolder extends RecyclerView.ViewHolder{
-        TextView postTitle, postBody, clg, datePosted, timePosted, threeDot;
-        ImageView postImage;
-        public postsRVViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            postTitle = itemView.findViewById(R.id.postTitle);
-            postBody = itemView.findViewById(R.id.postBody);
-            clg = itemView.findViewById(R.id.clgName);
-            datePosted = itemView.findViewById(R.id.datePosted);
-            timePosted = itemView.findViewById(R.id.timePosted);
-            postImage = itemView.findViewById(R.id.postImageView);
-            threeDot = itemView.findViewById(R.id.threeDot);
-        }
+    inner class postsRVViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var postTitle: TextView = itemView.findViewById(R.id.postTitle)
+        var postBody: TextView = itemView.findViewById(R.id.postBody)
+        var clg: TextView = itemView.findViewById(R.id.clgName)
+        var datePosted: TextView = itemView.findViewById(R.id.datePosted)
+        var timePosted: TextView = itemView.findViewById(R.id.timePosted)
+        var threeDot: TextView = itemView.findViewById(R.id.threeDot)
+        var postImage: ImageView =
+            itemView.findViewById(R.id.postImageView)
     }
 }

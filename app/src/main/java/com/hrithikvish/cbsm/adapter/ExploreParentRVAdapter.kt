@@ -1,72 +1,51 @@
-package com.hrithikvish.cbsm.adapter;
+package com.hrithikvish.cbsm.adapter
 
-import android.content.Context;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.hrithikvish.cbsm.R
+import com.hrithikvish.cbsm.adapter.ExploreParentRVAdapter.ParentViewHolder
+import com.hrithikvish.cbsm.model.ParentItemModelClassForRV
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.hrithikvish.cbsm.R;
-import com.hrithikvish.cbsm.model.ParentItemModelClassForRV;
-import com.hrithikvish.cbsm.model.PostModelClassForRV;
-
-import java.util.ArrayList;
-
-public class ExploreParentRVAdapter extends RecyclerView.Adapter<ExploreParentRVAdapter.ParentViewHolder> {
-
-    Context context;
-    ArrayList<ParentItemModelClassForRV> collegesList;
-
-    public ExploreParentRVAdapter(Context context, ArrayList<ParentItemModelClassForRV> collegesList) {
-        this.context = context;
-        this.collegesList = collegesList;
+class ExploreParentRVAdapter(
+    var context: Context?,
+    var collegesList: ArrayList<ParentItemModelClassForRV>?
+) :
+    RecyclerView.Adapter<ParentViewHolder>() {
+    fun filterList(filteredList: ArrayList<ParentItemModelClassForRV>) {
+        collegesList = filteredList
+        notifyDataSetChanged()
     }
 
-    public void filterList(ArrayList<ParentItemModelClassForRV> filteredList) {
-        collegesList = filteredList;
-        notifyDataSetChanged();
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentViewHolder {
+        val view = LayoutInflater.from(context)
+            .inflate(R.layout.explore_page_parent_rv_item, parent, false)
+        return ParentViewHolder(view)
     }
 
-    @NonNull
-    @Override
-    public ExploreParentRVAdapter.ParentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.explore_page_parent_rv_item, parent, false);
-        return new ParentViewHolder(view);
+    override fun onBindViewHolder(holder: ParentViewHolder, position: Int) {
+        val parentModelClass = collegesList!![position]
+
+        holder.collegeName.text = parentModelClass.collegeName
+
+        val childRVAdapter = ExploreChildRVAdapter(context!!, parentModelClass.postList)
+        holder.childRV.setHasFixedSize(true)
+        holder.childRV.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        holder.childRV.adapter = childRVAdapter
+        childRVAdapter.notifyDataSetChanged()
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ExploreParentRVAdapter.ParentViewHolder holder, int position) {
-        ParentItemModelClassForRV parentModelClass = collegesList.get(position);
-
-        holder.collegeName.setText(parentModelClass.getCollegeName());
-
-        ExploreChildRVAdapter childRVAdapter = new ExploreChildRVAdapter(context, parentModelClass.getPostList());
-        holder.childRV.setHasFixedSize(true);
-        holder.childRV.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        holder.childRV.setAdapter(childRVAdapter);
-        childRVAdapter.notifyDataSetChanged();
-
+    override fun getItemCount(): Int {
+        return collegesList!!.size
     }
 
-    @Override
-    public int getItemCount() {
-        return collegesList.size();
-    }
-
-    public class ParentViewHolder extends RecyclerView.ViewHolder {
-        TextView collegeName;
-        RecyclerView childRV;
-        public ParentViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            collegeName = itemView.findViewById(R.id.collegeName);
-            childRV = itemView.findViewById(R.id.childRV);
-
-        }
+    inner class ParentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var collegeName: TextView = itemView.findViewById(R.id.collegeName)
+        var childRV: RecyclerView = itemView.findViewById(R.id.childRV)
     }
 }

@@ -1,223 +1,221 @@
-package com.hrithikvish.cbsm;
+package com.hrithikvish.cbsm
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Patterns;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
+import android.content.Intent
+import android.os.Bundle
+import android.util.Patterns
+import android.view.View
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.material.button.MaterialButton
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding
+import com.hrithikvish.cbsm.utils.ActivityFinisher
+import com.hrithikvish.cbsm.utils.Constants
+import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper
+import com.hrithikvish.cbsm.utils.SharedPrefManager
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+class SignUpActivity : AppCompatActivity(), ActivityFinisher {
+    var binding: ActivitySignUpBinding? = null
+    var sharedPrefManager: SharedPrefManager? = null
+    var auth: FirebaseAuth? = null
+    var googleSignInClient: GoogleSignInClient? = null
+    var googleSignUnBtn: MaterialButton? = null
+    var firebaseDatabaseHelper: FirebaseDatabaseHelper? = null
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.util.IOUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.hrithikvish.cbsm.databinding.ActivitySignUpBinding;
-import com.hrithikvish.cbsm.utils.ActivityFinisher;
-import com.hrithikvish.cbsm.utils.Constants;
-import com.hrithikvish.cbsm.utils.FirebaseDatabaseHelper;
-import com.hrithikvish.cbsm.utils.SharedPrefManager;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySignUpBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
+        auth = FirebaseAuth.getInstance()
+        firebaseDatabaseHelper = FirebaseDatabaseHelper(
+            this@SignUpActivity, auth!!
+        ) { this.finishActivity() }
+        sharedPrefManager = SharedPrefManager(this@SignUpActivity)
+        googleSignUnBtn = binding!!.googleSignUp as MaterialButton
+        FirebaseApp.initializeApp(this)
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(
+            Constants.CLIENT_ID
+        ).requestEmail().build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-public class SignUpActivity extends AppCompatActivity implements ActivityFinisher {
+        binding!!.goToLoginPageText.setOnClickListener { view: View? ->
+            startActivity(
+                Intent(
+                    this@SignUpActivity,
+                    LoginActivity::class.java
+                )
+            )
+            finish()
+        }
 
-    ActivitySignUpBinding binding;
-    SharedPrefManager sharedPrefManager;
-    FirebaseAuth auth;
-    GoogleSignInClient googleSignInClient;
-    MaterialButton googleSignUnBtn;
-    FirebaseDatabaseHelper firebaseDatabaseHelper;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivitySignUpBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        auth = FirebaseAuth.getInstance();
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(SignUpActivity.this, auth, this::finishActivity);
-        sharedPrefManager = new SharedPrefManager(SignUpActivity.this);
-        googleSignUnBtn = (MaterialButton) binding.googleSignUp;
-        FirebaseApp.initializeApp(this);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(Constants.CLIENT_ID).requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        binding.goToLoginPageText.setOnClickListener(view -> {
-            startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-            finish();
-        });
-
-        binding.signUpBtn.setOnClickListener(view -> {
-            String email = binding.emailET.getText().toString().trim();
-            String pass = binding.passET.getText().toString().trim();
-            String conPass = binding.conPassET.getText().toString().trim();
+        binding!!.signUpBtn.setOnClickListener { view: View? ->
+            val email = binding!!.emailET.text.toString().trim { it <= ' ' }
+            val pass = binding!!.passET.text.toString().trim { it <= ' ' }
+            val conPass = binding!!.conPassET.text.toString().trim { it <= ' ' }
             if (!email.isEmpty() && !pass.isEmpty() && !conPass.isEmpty()) {
-                changeRegBtnToLoading(true);
-                signUpUsingEmailPass(email, pass, conPass);
+                changeRegBtnToLoading(true)
+                signUpUsingEmailPass(email, pass, conPass)
             } else {
                 if (email.isEmpty()) {
-                    binding.emailET.setError("Enter Email");
+                    binding!!.emailET.error = "Enter Email"
                 }
                 if (pass.isEmpty()) {
-                    binding.passET.setError("Enter Password");
+                    binding!!.passET.error = "Enter Password"
                 }
                 if (conPass.isEmpty()) {
-                    binding.conPassET.setError("Re Enter Password");
+                    binding!!.conPassET.error = "Re Enter Password"
                 }
             }
-        });
+        }
 
-        binding.googleSignUp.setOnClickListener(view -> {
-            changeGoogleRegBtnToLoading(true);
-            Intent signInIntent = googleSignInClient.getSignInIntent();
-            activityResultLauncher.launch(signInIntent);
-        });
-
+        binding!!.googleSignUp.setOnClickListener { view: View? ->
+            changeGoogleRegBtnToLoading(true)
+            val signInIntent = googleSignInClient!!.signInIntent
+            activityResultLauncher.launch(signInIntent)
+        }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        changeRegBtnToLoading(false);
-        changeGoogleRegBtnToLoading(false);
+    override fun onStop() {
+        super.onStop()
+        changeRegBtnToLoading(false)
+        changeGoogleRegBtnToLoading(false)
     }
 
-    private void signUpUsingEmailPass(String email, String pass, String conPass) {
+    private fun signUpUsingEmailPass(email: String, pass: String, conPass: String) {
         if (validateData(email, pass, conPass)) {
             //String clg = binding.clgET.getText().toString().trim();
-            auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Intent intent = new Intent(SignUpActivity.this, SelectCollegeActivity.class);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                        changeRegBtnToLoading(false);
-                    }
+            auth!!.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val intent = Intent(
+                        this@SignUpActivity,
+                        SelectCollegeActivity::class.java
+                    )
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        this@SignUpActivity,
+                        task.exception!!.localizedMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    changeRegBtnToLoading(false)
                 }
-            });
+            }
         } else {
-            changeRegBtnToLoading(false);
+            changeRegBtnToLoading(false)
         }
     }
 
-    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult o) {
-            if (o.getResultCode() == RESULT_OK) {
-                Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(o.getData());
-                try {
-                    GoogleSignInAccount googleSignInAccount = accountTask.getResult(ApiException.class);
-                    AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-                    auth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                //sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
-                                auth = FirebaseAuth.getInstance();
-                                FirebaseUser user = auth.getCurrentUser();
-                                String email = user.getEmail();
+    private val activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
+        ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        if (activityResult.resultCode == RESULT_OK) {
+            val accountTask = GoogleSignIn.getSignedInAccountFromIntent(activityResult.data)
+            try {
+                val googleSignInAccount = accountTask.getResult(
+                    ApiException::class.java
+                )
+                val authCredential =
+                    GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
+                auth!!.signInWithCredential(authCredential).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        //sharedPrefManager.putBoolean(Constants.LOGIN_SESSION_SHARED_PREF_KEY, true);
+                        auth = FirebaseAuth.getInstance()
+                        val user = auth!!.currentUser
+                        val email = user!!.email
 
-                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if(snapshot.child("Users").child(auth.getUid()).exists()) {
-                                            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-                                        } else {
-                                            Intent intent = new Intent(SignUpActivity.this, SelectCollegeActivity.class);
-                                            startActivity(intent);
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {}
-                                });
-                            } else {
-                                Toast.makeText(SignUpActivity.this, "Something went wrong, try again.", Toast.LENGTH_SHORT).show();
-                                changeGoogleRegBtnToLoading(false);
+                        val databaseReference = FirebaseDatabase.getInstance().reference
+                        databaseReference.addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.child("Users").child(auth!!.uid!!).exists()) {
+                                    startActivity(
+                                        Intent(
+                                            this@SignUpActivity,
+                                            HomeActivity::class.java
+                                        )
+                                    )
+                                } else {
+                                    val intent = Intent(
+                                        this@SignUpActivity,
+                                        SelectCollegeActivity::class.java
+                                    )
+                                    startActivity(intent)
+                                }
                             }
-                        }
-                    });
-                } catch (ApiException e) {
-                    throw new RuntimeException(e);
+
+                            override fun onCancelled(error: DatabaseError) {}
+                        })
+                    } else {
+                        Toast.makeText(
+                            this@SignUpActivity,
+                            "Something went wrong, try again.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        changeGoogleRegBtnToLoading(false)
+                    }
                 }
+            } catch (e: ApiException) {
+                throw RuntimeException(e)
             }
         }
-    });
+    }
 
-    private boolean validateData(String email, String pass, String conPass) {
+    private fun validateData(email: String, pass: String, conPass: String): Boolean {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.emailET.setError("Invalid Email");
-            return false;
+            binding!!.emailET.error = "Invalid Email"
+            return false
         }
-        if (pass.length() < 6) {
-            binding.passET.setError("Password Length must be 6 or more");
-            return false;
+        if (pass.length < 6) {
+            binding!!.passET.error = "Password Length must be 6 or more"
+            return false
         }
-        if (!conPass.equals(pass)) {
-            binding.conPassET.setError("Password doesn't match");
-            return false;
+        if (conPass != pass) {
+            binding!!.conPassET.error = "Password doesn't match"
+            return false
         }
         /*if(binding.clgET.getText().toString().isEmpty()) {
             binding.clgET.setError("Select Your College");
             return false;
         }*/
-        return true;
+        return true
     }
 
-    private void changeRegBtnToLoading(Boolean isLoading) {
-        if(isLoading) {
-            binding.signUpBar.setVisibility(View.VISIBLE);
-            binding.signUpBtn.setText("");
+    private fun changeRegBtnToLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding!!.signUpBar.visibility = View.VISIBLE
+            binding!!.signUpBtn.text = ""
         } else {
-            binding.signUpBar.setVisibility(View.GONE);
-            binding.signUpBtn.setText("Register");
+            binding!!.signUpBar.visibility = View.GONE
+            binding!!.signUpBtn.text = "Register"
         }
     }
 
-    private void changeGoogleRegBtnToLoading(Boolean isLoading) {
-        if(isLoading) {
-            binding.googleSignUp.setText("");
-            googleSignUnBtn.setIcon(null);
-            binding.googleBar.setVisibility(View.VISIBLE);
+    private fun changeGoogleRegBtnToLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding!!.googleSignUp.text = ""
+            googleSignUnBtn!!.icon = null
+            binding!!.googleBar.visibility = View.VISIBLE
         } else {
-            binding.googleBar.setVisibility(View.GONE);
-            googleSignUnBtn.setIconResource(R.drawable.icon_google);
-            binding.googleSignUp.setText("Continue to Google");
+            binding!!.googleBar.visibility = View.GONE
+            googleSignUnBtn!!.setIconResource(R.drawable.icon_google)
+            binding!!.googleSignUp.text = "Continue to Google"
         }
     }
 
-    @Override
-    public void finishActivity() {
-        finish();
+    override fun finishActivity() {
+        finish()
     }
 }

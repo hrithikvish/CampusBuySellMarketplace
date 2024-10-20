@@ -1,59 +1,42 @@
-package com.hrithikvish.cbsm.model;
+package com.hrithikvish.cbsm.model
 
 //for offline usage
-public class UserProfile {
-    private String emailName;
-    private String name;
-    private String email;
-    private String clg;
-
-    public UserProfile(String emailName, String email, String clg, String name) {
-        this.emailName = emailName;
-        this.email = email;
-        this.clg = clg;
-        this.name = name;
+class UserProfile(
+    var emailName: String?,
+    private var email: String?,
+    private var clg: String?,
+    private var name: String?
+) {
+    fun getName(): String {
+        return if (name != null) name!! else ""
     }
 
-    public String getName() {
-        return name != null ? name : "";
+    fun getEmail(): String {
+        return if (email != null) email!! else ""
     }
 
-    public String getEmail() {
-        return email != null ? email : "";
+    fun getClg(): String {
+        return if (clg != null) clg!! else ""
     }
 
-    public String getClg() {
-        return clg != null ? clg : "";
+    fun setName(name: String) {
+        this.name = name
     }
 
-    public void setName(String name) {
-        this.name = name;
+    fun setEmail(email: String) {
+        this.email = email
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    fun setClg(clg: String) {
+        this.clg = clg
     }
 
-    public void setClg(String clg) {
-        this.clg = clg;
-    }
-
-    public String getEmailName() {
-        return emailName;
-    }
-
-    public void setEmailName(String emailName) {
-        this.emailName = emailName;
-    }
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "UserProfile{" +
                 "emailName='" + emailName + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", clg='" + clg + '\'' +
-                '}';
+                '}'
     }
-
 }

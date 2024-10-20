@@ -1,38 +1,18 @@
-package com.hrithikvish.cbsm.model;
+package com.hrithikvish.cbsm.model
 
-import java.util.ArrayList;
+class ParentItemModelClassForRV {
+    var collegeName: String? = null
+    var postList: ArrayList<PostModelClassForRV?>? = null
 
-public class ParentItemModelClassForRV {
+    constructor()
 
-    String collegeName;
-    ArrayList<PostModelClassForRV> postList;
-
-    public ParentItemModelClassForRV() {}
-
-    public ParentItemModelClassForRV(String collegeName, ArrayList<PostModelClassForRV> postList) {
-        this.collegeName = collegeName;
-        this.postList = postList;
+    constructor(collegeName: String?, postList: ArrayList<PostModelClassForRV?>?) {
+        this.collegeName = collegeName
+        this.postList = postList
     }
 
-    public String getCollegeName() {
-        return collegeName;
-    }
-
-    public void setCollegeName(String collegeName) {
-        this.collegeName = collegeName;
-    }
-
-    public ArrayList<PostModelClassForRV> getPostList() {
-        return postList;
-    }
-
-    public void setPostList(ArrayList<PostModelClassForRV> postList) {
-        this.postList = postList;
-    }
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "ParentItemModelClassForRV{" +
-                "collegeName='" + collegeName + '}';
+                "collegeName='" + collegeName + '}'
     }
 }
