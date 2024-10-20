@@ -1,5 +1,7 @@
 package com.hrithikvish.cbsm;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -23,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hrithikvish.cbsm.databinding.ActivitySelectedPostBinding;
 import com.hrithikvish.cbsm.model.PostModelClassForRV;
+import com.hrithikvish.cbsm.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,29 +76,41 @@ public class SelectedPostActivity extends AppCompatActivity {
         binding.timePosted.setText(selectedItem.getTimePosted());
         binding.datePosted.setText(selectedItem.getDatePosted());
         binding.deleteBtn.setOnClickListener(view-> {
-            finish();
-
-            databaseReference.child("Posts").child(selectedItem.getPostId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure, you want to Delete this Item?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
-                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                List<String> list = (List<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
-                                list.remove(selectedItem.getPostId());
-                                databaseReference.child("Users").child(auth.getUid()).child("userPosts").setValue(list);
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
+                    databaseReference.child("Posts").child(selectedItem.getPostId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()) {
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        List<String> list = (List<String>) snapshot.child("Users").child(auth.getUid()).child("userPosts").getValue();
+                                        list.remove(selectedItem.getPostId());
+                                        databaseReference.child("Users").child(auth.getUid()).child("userPosts").setValue(list);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) { }
+                                });
+
+                                Toast.makeText(getApplicationContext(), "Item Delisted", Toast.LENGTH_SHORT).show();
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) { }
-                        });
-
-                        Toast.makeText(getApplicationContext(), "Item Delisted", Toast.LENGTH_SHORT).show();
-                    }
+                        }
+                    });
                 }
             });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {}
+            });
 
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
 
         //college

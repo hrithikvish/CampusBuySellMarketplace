@@ -40,27 +40,29 @@ public class ExploreChildRVAdapter extends RecyclerView.Adapter<ExploreChildRVAd
     public void onBindViewHolder(@NonNull ChildViewHolder holder, int position) {
         PostModelClassForRV post = postList.get(position);
 
-        if(post.getTitle().isEmpty()) {
-            holder.postTitle.setText("No Title Available");
-        } else {
-            holder.postTitle.setText(post.getTitle());
-        }
-        if(post.getBody().isEmpty()) {
-            holder.postBody.setText("No Description Available");
-        } else {
-            holder.postBody.setText(post.getBody());
-        }
-        holder.datePosted.setText(post.getDatePosted());
-        Glide.with(context)
-                .load(post.getPostImageUri())
-                .into(holder.postImage);
+        if(post != null) {
+            if(post.getTitle().isEmpty()) {
+                holder.postTitle.setText("No Title Available");
+            } else {
+                holder.postTitle.setText(post.getTitle());
+            }
+            if(post.getBody().isEmpty()) {
+                holder.postBody.setText("No Description Available");
+            } else {
+                holder.postBody.setText(post.getBody());
+            }
+            holder.datePosted.setText(post.getDatePosted());
+            Glide.with(context)
+                    .load(post.getPostImageUri())
+                    .into(holder.postImage);
 
-        holder.itemView.setOnClickListener(view-> {
-            PostModelClassForRV selectedPost = postList.get(position);
-            Intent intent = new Intent(context, SelectedPostActivity.class);
-            intent.putExtra("selectedPost", selectedPost);
-            context.startActivity(intent);
-        });
+            holder.itemView.setOnClickListener(view-> {
+                PostModelClassForRV selectedPost = postList.get(position);
+                Intent intent = new Intent(context, SelectedPostActivity.class);
+                intent.putExtra("selectedPost", selectedPost);
+                context.startActivity(intent);
+            });
+        }
     }
 
     @Override
